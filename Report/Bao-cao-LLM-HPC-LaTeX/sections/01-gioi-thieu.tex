@@ -1,0 +1,107 @@
+\phant{GIỚI THIỆU}\label{sec:gioithieu}
+
+\subsection{Bối cảnh}
+
+Tính toán hiệu năng cao (HPC) được xây dựng trên hai trụ cột lập trình song song:
+bộ nhớ chia sẻ (shared memory) và bộ nhớ phân tán (distributed memory). Trong mô
+hình thứ nhất, nhiều luồng (thread) cùng truy cập một không gian địa chỉ, phối
+hợp với nhau qua biến dùng chung, rào chắn và cơ chế đồng bộ. Trong mô hình thứ
+hai, nhiều tiến trình (process) chạy trên các nút khác nhau, trao đổi dữ liệu
+bằng thông điệp. Mỗi mô hình có chi phí riêng: đồng bộ và tranh chấp bộ nhớ ở
+mô hình chia sẻ; độ trễ và băng thông truyền thông ở mô hình phân tán. Việc viết
+mã song song đúng, nhanh và mở rộng được đòi hỏi hiểu biết đồng thời về thuật
+toán, kiến trúc máy tính, mô hình bộ nhớ và công cụ biên dịch.
+
+Trong hơn một thập kỷ, chuẩn C++ đã bổ sung dần các cơ chế song song ngay trong
+ngôn ngữ: \code{std::thread} và \code{std::async} (C++11), thuật toán song song
+với execution policy (C++17), coroutine cùng ranges, semaphore, latch, barrier
+(C++20) \cite{diehl2023shared,diehl2024book}. Song song với đó, OpenMP và MPI vẫn
+là hai chuẩn thực tế được dùng rộng rãi nhất trong các ứng dụng khoa học. Sự
+phong phú này tạo ra nhiều cách diễn đạt cùng một phép song song, nhưng cũng làm
+tăng không gian lỗi: một chương trình có thể biên dịch thành công, chạy không
+báo lỗi, mà vẫn cho kết quả sai hoặc không hề tận dụng số lõi được yêu cầu.
+
+Cùng lúc đó, các mô hình ngôn ngữ lớn (LLM) đã trở thành công cụ hỗ trợ sinh mã
+phổ biến. Từ một mô tả bằng ngôn ngữ tự nhiên, mô hình có thể tạo ra hàm, lớp,
+thậm chí cả chương trình hoàn chỉnh. Các đánh giá ban đầu tập trung vào bài toán
+lập trình thuật toán hoặc mã tuần tự, nơi tiêu chí đúng/sai tương đối rõ ràng.
+Với mã HPC, tiêu chí phức tạp hơn nhiều: ngoài tính đúng, còn có khả năng biên
+dịch trên toolchain thực tế, khả năng kiểm soát tài nguyên, tính ổn định khi
+tăng số lõi và hiệu năng so với mã do con người viết.
+
+\subsection{Vấn đề nghiên cứu}
+
+Khoảng trống mà bài báo gốc \cite{diehl2026} hướng tới nằm ở giao điểm của ba yếu
+tố. Thứ nhất, phần lớn nghiên cứu về LLM sinh mã chỉ đánh giá một mô hình lập
+trình đơn lẻ, chẳng hạn OpenMP, OpenACC hoặc MPI, nên thiếu so sánh ngang hàng
+giữa các mức trừu tượng. Thứ hai, các nghiên cứu thường dừng ở tỉ lệ biên dịch
+hoặc tỉ lệ vượt qua bộ kiểm thử, mà không đo khả năng mở rộng trên phần cứng
+song song thật. Thứ ba, kiến thức của LLM về hệ sinh thái công cụ — trình biên
+dịch nào, thư viện nền nào, phiên bản chuẩn nào — hầu như chưa được kiểm chứng,
+dù đây chính là nguồn lỗi phổ biến trong thực tế.
+
+Bài toán Mandelbrot được chọn làm phép thử có kiểm soát. Đây là bài toán song
+song hiển nhiên (\term{embarrassingly parallel}): mỗi điểm ảnh được tính độc lập,
+không cần bộ giải, không có trao đổi dữ liệu giữa các đơn vị tính toán. Nhờ vậy,
+sai sót quan sát được chủ yếu đến từ cách biểu diễn song song, cách quản lý luồng
+và cách xuất kết quả, chứ không bị nhiễu bởi thuật toán số phức tạp. Nói cách
+khác, bài toán đóng vai trò một \term{benchmark tối thiểu} để cô lập năng lực sinh
+mã song song của LLM.
+
+\subsection{Mục tiêu và câu hỏi nghiên cứu}
+
+Mục tiêu của bài báo là đánh giá một cách có hệ thống bốn LLM hàng đầu
+(ChatGPT-4, ChatGPT-5, Claude và LLaMA) trên năm biến thể lập trình song song:
+C++11 bất đồng bộ, C++17 thuật toán song song, C++20 coroutine, OpenMP và
+MPI+OpenMP. Ba câu hỏi nghiên cứu được đặt ra:
+
+\begin{enumerate}[label=\textbf{RQ\arabic*.},leftmargin=2.2cm]
+  \item LLM sinh mã C++ song song đúng cú pháp và biên dịch được ở mức nào?
+  \item Những lỗi thực thi và ngữ nghĩa nào xuất hiện, chúng khó sửa đến đâu, và
+        nguyên nhân gốc là gì?
+  \item Sau khi sửa, mã sinh ra có mở rộng theo số lõi và số nút không, và có
+        cạnh tranh được với mã do con người viết không?
+\end{enumerate}
+
+\subsection{Đóng góp}
+
+Bài báo gốc nêu bốn đóng góp: (i) thiết kế prompt có cấu trúc cho C++11/17/20,
+OpenMP và MPI+OpenMP, dùng nhất quán cho mọi mô hình; (ii) phân tích chi tiết kết
+quả biên dịch, lỗi thực thi và tính đúng chức năng; (iii) đánh giá coroutine
+C++20 — cơ chế song song mới nhất, đang được tích hợp vào Kokkos và HPX; (iv)
+phân loại lỗi và cách khắc phục, qua đó chỉ ra giới hạn của LLM trong tổng hợp và
+gỡ lỗi mã HPC.
+
+Báo cáo này bổ sung thêm ba đóng góp trình bày:
+
+\begin{itemize}
+  \item Hệ thống hóa cơ sở lý thuyết của từng mô hình lập trình, giải thích vì sao
+        các lỗi quan sát được lại xảy ra ở đúng điểm đó, thay vì chỉ liệt kê triệu
+        chứng.
+  \item Xây dựng một phân loại lỗi theo tầng (cú pháp, API, ngữ nghĩa, đồng bộ,
+        định dạng, đo đạc) kèm mức độ khó sửa và kiến thức cần có.
+  \item Chuyển kết quả nghiên cứu thành quy trình kiểm duyệt và danh mục kiểm tra
+        thực dụng cho nhóm phát triển HPC có sử dụng LLM hỗ trợ.
+\end{itemize}
+
+\subsection{Phạm vi và cách tiếp cận}
+
+Phạm vi thực nghiệm giới hạn ở bốn mô hình ngôn ngữ, năm biến thể lập trình, một
+bài toán, một trình biên dịch (GCC 11.5.0), một backend song song (Intel TBB
+2022.2) và một cụm CPU. Mỗi biến thể được sinh một lần từ một prompt cố định,
+sau đó con người sửa lỗi biên dịch và lỗi thực thi theo cách tối thiểu, ghi nhận
+lại từng thay đổi. Kết quả hiệu năng vì thế phản ánh mã \emph{sau khi sửa}, không
+phải chất lượng nguyên bản của lần sinh đầu tiên. Cách tiếp cận này phù hợp với
+câu hỏi thực tiễn: điều người dùng quan tâm là LLM tạo ra bao nhiêu việc phải sửa
+và sau khi sửa thì mã có dùng được không.
+
+\subsection{Bố cục báo cáo}
+
+Phần~\ref{sec:coso} trình bày cơ sở lý thuyết: bài toán Mandelbrot, bốn cơ chế
+song song của C++, OpenMP, MPI và mô hình lai, cùng nền tảng về LLM sinh mã.
+Phần~\ref{sec:phuongphap} mô tả thiết kế thực nghiệm, prompt, quy trình kiểm định,
+độ đo và môi trường đo. Phần~\ref{sec:ketqua} trình bày kết quả theo từng mô hình
+và từng biến thể, kèm phân tích lỗi, chất lượng mã và khả năng mở rộng.
+Phần~\ref{sec:thaoluan} thảo luận nguyên nhân, hàm ý thực tiễn và hạn chế.
+Phần~\ref{sec:ketluan} kết luận và nêu hướng phát triển. Phụ lục cung cấp bảng
+tổng hợp lỗi, trích mã tiêu biểu và danh mục kiểm tra.

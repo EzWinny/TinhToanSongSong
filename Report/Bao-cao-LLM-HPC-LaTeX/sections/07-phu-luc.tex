@@ -1,0 +1,117 @@
+\clearpage
+\section*{PHỤ LỤC A. BẢNG ĐỐI CHIẾU KẾT QUẢ CHI TIẾT}
+\addcontentsline{toc}{section}{PHỤ LỤC A. BẢNG ĐỐI CHIẾU KẾT QUẢ CHI TIẾT}
+
+Bảng~\ref{tab:detail} dựng lại kết quả chi tiết của từng biến thể từ Bảng I và
+Bảng II trong bài báo. Ký hiệu \checkmark{} là không có lỗi, $\times$ là có lỗi.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Kết quả chi tiết theo biến thể (dựng lại từ Bảng I và II của bài báo).}
+\label{tab:detail}
+\begin{tabular}{@{}llcccc@{}}
+\toprule
+\textbf{Biến thể} & \textbf{Tiêu chí} & \textbf{ChatGPT-5} & \textbf{ChatGPT-4} & \textbf{Claude} & \textbf{LLaMA} \\
+\midrule
+\multirow{3}{*}{Coroutine}
+ & Build       & \checkmark & \checkmark & \checkmark & $\times$ \\
+ & Runtime     & \checkmark & $\times$   & $\times$   & $\times$ \\
+ & Correctness & \checkmark & \checkmark & \checkmark & $\times$ \\
+\midrule
+\multirow{3}{*}{Bất đồng bộ}
+ & Build       & \checkmark & \checkmark & \checkmark & \checkmark \\
+ & Runtime     & \checkmark & $\times$   & \checkmark & $\times$ \\
+ & Correctness & \checkmark & \checkmark & \checkmark & $\times$ \\
+\midrule
+\multirow{3}{*}{Thuật toán song song}
+ & Build       & \checkmark & \checkmark & \checkmark & $\times$ \\
+ & Runtime     & \checkmark & $\times$   & $\times$   & $\times$ \\
+ & Correctness & \checkmark & \checkmark & \checkmark & $\times$ \\
+\midrule
+\multirow{3}{*}{OpenMP}
+ & Build       & \checkmark & \checkmark & \checkmark & \checkmark \\
+ & Runtime     & \checkmark & $\times$   & \checkmark & $\times$ \\
+ & Correctness & \checkmark & \checkmark & \checkmark & $\times$ \\
+\midrule
+\multirow{3}{*}{MPI+OpenMP}
+ & Build       & \checkmark & \checkmark & \checkmark & $\times$ \\
+ & Runtime     & \checkmark & \checkmark & \checkmark & $\times$ \\
+ & Correctness & \checkmark & \checkmark & \checkmark & $\times$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Bảng~\ref{tab:detail} cho thấy rõ hơn Bảng~\ref{tab:success}: ChatGPT-4 thất bại
+ở tầng thực thi cho cả bốn biến thể bộ nhớ chia sẻ, dù không có lỗi biên dịch;
+Claude chỉ thất bại ở coroutine và thuật toán song song; LLaMA thất bại ở mọi
+tiêu chí ngoài hai lần biên dịch thành công (bất đồng bộ và OpenMP).
+
+\clearpage
+\section*{PHỤ LỤC B. KHUNG MPI+OPENMP THAM CHIẾU}
+\addcontentsline{toc}{section}{PHỤ LỤC B. KHUNG MPI+OPENMP THAM CHIẾU}
+
+Đoạn mã dưới đây tóm tắt cấu trúc đúng của một chương trình lai MPI+OpenMP cho
+bài toán Mandelbrot. Nó không phải mã do LLM sinh, mà là khung tham chiếu để đối
+chiếu khi kiểm duyệt. Hai điểm cần chú ý: dùng \code{MPI\_Gatherv} khi số hàng
+không chia hết cho số tiến trình, và đặt mốc kết thúc timer \emph{sau} bước gom
+dữ liệu nếu muốn đo toàn bộ chi phí.
+
+\begin{lstlisting}[language=C++,caption={Khung MPI+OpenMP với phân vùng theo hàng.},label={lst:mpi},numbers=left]
+int rank, size;
+MPI_Init(&argc, &argv);
+MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+int base = height / size;
+int local_h = base + (rank < height % size ? 1 : 0);
+int y0 = rank * base + std::min(rank, height % size);
+std::vector<unsigned char> local(local_h * width);
+
+#pragma omp parallel for schedule(dynamic)
+for (int y = 0; y < local_h; ++y)
+    for (int x = 0; x < width; ++x)
+        local[y*width + x] = escape_pixel(x, y0 + y);
+
+std::vector<int> counts(size), displs(size);
+for (int r = 0; r < size; ++r) {
+    int h = base + (r < height % size ? 1 : 0);
+    counts[r] = h * width;
+    displs[r] = (r * base + std::min(r, height % size)) * width;
+}
+
+std::vector<unsigned char> image;
+if (rank == 0) image.resize(width * height);
+MPI_Gatherv(local.data(), (int)local.size(), MPI_UNSIGNED_CHAR,
+            image.data(), counts.data(), displs.data(),
+            MPI_UNSIGNED_CHAR, 0, MPI_COMM_WORLD);
+
+double t_end = MPI_Wtime();       // do sau khi gather
+if (rank == 0) write_pgm("mandel.pgm", image, width, height);
+MPI_Finalize();
+\end{lstlisting}
+
+\clearpage
+\section*{PHỤ LỤC C. CÂU HỎI THẢO LUẬN}
+\addcontentsline{toc}{section}{PHỤ LỤC C. CÂU HỎI THẢO LUẬN}
+
+Các câu hỏi dưới đây có thể dùng để thảo luận nhóm hoặc kiểm tra mức hiểu bài.
+
+\begin{enumerate}
+  \item Vì sao một chương trình có thể biên dịch 100\% nhưng chỉ 20\% chạy không
+        lỗi? Cho ví dụ cụ thể từ bài báo.
+  \item GCC dùng backend nào cho \code{std::execution::par}? Vì sao
+        \code{OMP\_NUM\_THREADS} không điều khiển được số luồng trong trường hợp
+        này?
+  \item \code{done()} của coroutine trả về \code{true} khi nào? Điều gì xảy ra
+        nếu \code{final\_suspend} là \code{suspend\_never}?
+  \item Phân biệt P4 và P5. Vì sao lỗi định dạng có thể tạo ảnh đen mà không báo
+        lỗi?
+  \item Vì sao \code{MPI\_Gather} có thể gây segfault thay vì báo lỗi ngay? Khi
+        nào cần dùng \code{MPI\_Gatherv}?
+  \item Đọc một đường cong mở rộng: làm sao phân biệt “mở rộng tốt” với “luôn
+        chạy trên toàn bộ lõi”?
+  \item COCOMO có phù hợp để đánh giá chi phí phát triển mã HPC không? Vì sao?
+  \item Nếu phải chọn một mô hình cho công việc hằng ngày, bạn sẽ dựa trên tiêu
+        chí nào ngoài tỉ lệ biên dịch?
+\end{enumerate}

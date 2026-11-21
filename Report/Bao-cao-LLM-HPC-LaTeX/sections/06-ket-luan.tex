@@ -1,0 +1,98 @@
+\phant{KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN}\label{sec:ketluan}
+
+\subsection{Kết luận}
+
+Nghiên cứu của Diehl, Nader và Gupta đánh giá bốn LLM hàng đầu trên năm biến thể
+lập trình song song cho bài toán Mandelbrot. Kết quả cho thấy một bức tranh vừa
+lạc quan vừa thận trọng.
+
+Ở mặt tích cực, LLM đã đủ khả năng tạo ra bản nháp mã song song C++ có cấu trúc
+đúng. Ba trong bốn mô hình biên dịch 100\% chương trình; sau khi sửa, mọi mã đều
+chạy và mở rộng được. ChatGPT-5 đạt 100\% ở cả ba tiêu chí biên dịch, thực thi và
+tính đúng — một kết quả đáng chú ý với một bài toán đa mô hình lập trình. Trong
+một số trường hợp, mã LLM còn vượt mã con người: bất đồng bộ của ChatGPT-4 và
+OpenMP của ChatGPT-5.
+
+Ở mặt hạn chế, khoảng cách giữa “biên dịch được” và “chạy đúng” rất lớn với các
+mô hình yếu. ChatGPT-4 biên dịch 100\% nhưng chỉ 20\% chương trình được tính là
+chạy không lỗi; Claude đạt 40\%; LLaMA 0\%. Các lỗi tập trung ở ba nhóm: kiểm
+soát số luồng (nhầm OpenMP với TBB), vòng đời coroutine (\code{final\_suspend},
+\code{promise\_type}, giải phóng hai lần) và định dạng đầu ra (P4/P5). Đây đều là
+lỗi ngữ nghĩa hoặc lỗi hệ sinh thái, không phải lỗi cú pháp.
+
+Kết luận trung tâm là: năng lực của LLM trong HPC không nằm ở việc viết đúng cú
+pháp, mà ở việc hiểu đúng \emph{ngữ cảnh thực thi} — backend nào, phiên bản nào,
+tài nguyên nào, chi phí nào. Khoảng cách lớn nhất so với chuyên gia không phải ở
+số dòng mã hay độ phức tạp thuật toán, mà ở hiểu biết về vòng đời tài nguyên và
+mô hình truyền thông. Đây là lý do LLM có thể rất hữu ích như trợ lý, nhưng chưa
+thể thay thế kỹ sư HPC.
+
+\subsection{Khuyến nghị}
+
+Từ kết quả thực nghiệm, có thể rút ra năm khuyến nghị thực dụng:
+
+\begin{enumerate}
+  \item \textbf{Coi mã LLM là bản nháp, không phải sản phẩm.} Luôn biên dịch với
+        cảnh báo bật, chạy trên dữ liệu nhỏ và kiểm tra đầu ra trước khi tin
+        tưởng.
+  \item \textbf{Đo mở rộng thay vì tin vào cờ dòng lệnh.} Kiểm tra backend thực
+        tế và xác nhận số luồng có hiệu lực bằng phép đo, không chỉ bằng việc đọc
+        mã.
+  \item \textbf{Soát kỹ coroutine và MPI.} Với coroutine, kiểm tra
+        \code{final\_suspend}, \code{promise\_type} và quyền sở hữu frame. Với
+        MPI, kiểm tra kích thước buffer, kiểu dữ liệu, trường hợp một tiến trình
+        và mốc đo thời gian.
+  \item \textbf{Kiểm tra định dạng đầu ra.} Lỗi P4/P5 có thể tạo ảnh đen mà không
+        báo lỗi; cần kiểm tra header, độ sâu bit và kích thước tệp.
+  \item \textbf{Viết prompt nêu rõ ràng buộc phi chức năng.} Số luồng/phân vùng
+        cấu hình được, đo thời gian loại trừ I/O, định dạng đầu ra, phiên bản
+        chuẩn C++, và — với MPI — yêu cầu chia việc thực sự thay vì tính lặp.
+\end{enumerate}
+
+Một khuyến nghị ở mức tổ chức: nên xem LLM như một thành viên nhóm cần được
+review, không phải một công cụ tự động. Quy trình review cần có danh mục kiểm tra
+riêng cho mã song song, vì các tiêu chí thông thường (biên dịch được, qua unit
+test) không đủ phát hiện lỗi tôn trọng tài nguyên và lỗi đo đạc.
+
+\subsection{Hướng phát triển}
+
+Bài báo đề xuất nhiều hướng mở rộng, có thể nhóm thành bốn trục.
+
+\subsubsection{Mở rộng bài toán}
+
+Cần đánh giá trên các benchmark truyền thông dày: stencil có trao đổi halo, FFT
+song song, bộ giải lặp dùng collective MPI. Đây là nơi lỗi đồng bộ và chi phí
+truyền thông thực sự lộ diện. Bên cạnh đó, các ứng dụng khoa học phức tạp như
+phần tử hữu hạn hoặc sai phân hữu hạn sẽ kiểm tra khả năng sinh mã cho bài toán
+có cấu trúc dữ liệu và phụ thuộc phức tạp.
+
+\subsubsection{Mở rộng mốc so sánh}
+
+Cần so sánh với các phiên bản mã con người được tối ưu cao hơn, không chỉ mã sách
+giáo khoa. Đồng thời, nên dùng công cụ profiling và gỡ lỗi để giải thích vì sao
+một số mã LLM nhanh hơn hẳn các mã khác — điều mà phép đo thông lượng đơn thuần
+không trả lời được.
+
+\subsubsection{Mở rộng mô hình}
+
+Cần bổ sung các mô hình mới như Gemini, DeepSeek-Coder, Grok và các mô hình chuyên
+mã. Nên đánh giá nhiều lần sinh cho mỗi cấu hình để có phân tích thống kê, và thử
+nghiệm với nhiều cách diễn đạt prompt, nhiệt độ khác nhau. Đây là điều kiện để
+chuyển từ nghiên cứu tình huống sang đánh giá có thể khái quát hóa.
+
+\subsubsection{Mở rộng tiêu chí}
+
+Nên so sánh LLM với các công cụ truyền thống như Intel Parallel Advisor, công cụ
+phân tích tĩnh và công cụ profiling. Điều này cho thấy LLM bổ sung hay thay thế
+những công cụ nào trong quy trình phát triển. Cuối cùng, cần xây dựng bộ tiêu chí
+đánh giá mã song song do AI sinh, bao gồm tính đúng, khả năng mở rộng, tính tái
+lập và chi phí bảo trì — chứ không chỉ dừng ở tỉ lệ biên dịch.
+
+\subsection{Kết luận cuối}
+
+Bài báo đặt nền móng cho một hướng nghiên cứu còn non trẻ: đánh giá LLM trong bối
+cảnh HPC thực thụ. Giá trị lớn nhất của nó không nằm ở việc tuyên bố mô hình nào
+“tốt nhất”, mà ở việc chỉ ra \emph{loại lỗi nào} xuất hiện, \emph{vì sao} chúng
+xuất hiện, và \emph{cần đo gì} để phát hiện. Đó là nền tảng để xây dựng các quy
+trình đánh giá nghiêm túc hơn, các mô hình chuyên biệt hơn, và các công cụ hỗ trợ
+lập trình HPC đáng tin cậy hơn trong tương lai.
