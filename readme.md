@@ -1,0 +1,1 @@
+Đây là repo dùng để lưu trữ thông tin chuẩn bị cho việc tính toán song song. Nó bao gồm các tài liệu hướng dẫn, ví dụ mã nguồn, và các công cụ hỗ trợ để thực hiện các phép tính song song hiệu quả.
