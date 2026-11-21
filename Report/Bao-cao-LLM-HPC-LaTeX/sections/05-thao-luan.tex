@@ -1,0 +1,181 @@
+\phant{THẢO LUẬN}\label{sec:thaoluan}
+
+\subsection{Hai lớp kiến thức của mã song song}
+
+Kết quả cho thấy năng lực của LLM trong mã HPC phụ thuộc vào hai lớp kiến thức
+khác nhau. Lớp thứ nhất là \emph{cú pháp và thư viện chuẩn}: viết đúng vòng lặp,
+đúng chữ ký hàm, đúng cách dùng \code{std::async}, \code{std::execution::par}
+hay \code{\#pragma omp parallel for}. Lớp thứ hai là \emph{kiến thức hệ sinh
+thái}: trình biên dịch nào, backend nào, phiên bản thư viện nào, tham số nào thực
+sự có hiệu lực, và chi phí nào sẽ xuất hiện khi chạy trên phần cứng thật.
+
+Tỉ lệ biên dịch cao (100\% ở ba mô hình) cho thấy lớp thứ nhất đã khá tốt. Khoảng
+cách lớn ở tỉ lệ thực thi cho thấy lớp thứ hai còn yếu. Đây là điểm quan trọng
+khi đánh giá LLM: một mô hình có thể đạt điểm cao trên các benchmark sinh mã
+thuật toán, nơi tiêu chí là “qua bộ kiểm thử”, nhưng vẫn thất bại trong HPC, nơi
+tiêu chí là “chạy đúng trên toolchain cụ thể với số tài nguyên cho trước”.
+
+\subsection{Vì sao coroutine là điểm yếu}
+
+Coroutine là biến thể có tỉ lệ lỗi cao nhất và khoảng cách lớn nhất so với mã con
+người. Có ba lý do kỹ thuật.
+
+Thứ nhất, coroutine yêu cầu người lập trình tự xây dựng phần hạ tầng: kiểu
+\code{task}, \code{promise\_type}, scheduler, cách chờ và cách hủy. Không có một
+“task chuẩn” trong C++20. Mỗi chương trình là một thiết kế riêng, nên mỗi lỗi
+cũng là một lỗi thiết kế riêng, khó được che chắn bởi các mẫu quen thuộc.
+
+Thứ hai, vòng đời frame là vấn đề ngữ nghĩa, không phải cú pháp. Việc
+\code{final\_suspend} trả về \code{suspend\_never} hay \code{suspend\_always}
+quyết định ai sở hữu frame, ai hủy nó, và \code{done()} có quan sát được trạng
+thái kết thúc hay không. Trình biên dịch không thể cảnh báo vì cả hai lựa chọn
+đều hợp lệ về mặt ngôn ngữ; chỉ ngữ cảnh sử dụng mới quyết định đúng sai.
+
+Thứ ba, lỗi coroutine thường biểu hiện muộn: treo, segfault, hoặc ảnh sai. Chúng
+không xuất hiện ở dòng khai báo mà ở vòng lặp chờ, ở hàm hủy, hoặc ở bước ghi ảnh.
+Việc gỡ lỗi đòi hỏi hiểu luồng thực thi và quyền sở hữu tài nguyên — đúng những
+thứ khó suy ra từ một prompt ngắn.
+
+\subsection{“Có tham số” không đồng nghĩa “tôn trọng tham số”}
+
+Một trong những bài học thực tiễn rõ nhất là không nên tin vào giao diện bề mặt.
+Nhiều chương trình in ra hướng dẫn dòng lệnh đầy đủ, phân tích \code{-t}, nhưng
+không dùng giá trị đó để giới hạn số luồng. Nguyên nhân có thể là:
+
+\begin{itemize}
+  \item Backend không phải OpenMP mà là TBB, nên biến môi trường bị bỏ qua.
+  \item Số luồng được đặt nhưng thư viện tự quyết định dùng toàn bộ lõi.
+  \item Tham số được truyền vào nhưng bị ghi đè bởi giá trị mặc định.
+  \item Chương trình dùng song song lồng nhau, và cấp ngoài không bị giới hạn.
+\end{itemize}
+
+Cách duy nhất để xác nhận hành vi thật là \emph{đo}. Một phép đo mở rộng đơn giản
+— chạy với 1, 2, 4, 8, 16, 20 lõi và vẽ thông lượng — sẽ lộ ra ngay chương trình
+nào thực sự tôn trọng tham số. Đây là lý do bài báo không dừng ở kiểm tra biên
+dịch mà còn đo hiệu năng.
+
+\subsection{Chất lượng không tỉ lệ với số dòng mã}
+
+Kết quả LOC và COCOMO cho thấy không có quan hệ đơn điệu giữa độ dài mã và chất
+lượng. ChatGPT-5 sinh mã dài nhất ở bản phân tán nhưng cũng sạch nhất; LLaMA sinh
+mã ngắn nhất nhưng phải thêm dòng và vẫn gặp lỗi thực thi. Mã ngắn có thể đạt được
+bằng cách lược bỏ kiểm tra biên, bỏ xử lý lỗi hoặc giả định ngầm về dữ liệu đầu
+vào — những thứ chỉ lộ ra khi chạy ở quy mô lớn.
+
+COCOMO cũng cần được đọc thận trọng. Mô hình này ước lượng nỗ lực từ số dòng mã
+và các hệ số kinh nghiệm, không mô hình hóa chi phí đồng bộ, truyền thông hay gỡ
+lỗi song song. Vì vậy, một chương trình ít dòng hơn không chắc rẻ hơn về tổng chi
+phí phát triển; nó chỉ có thể ít dòng hơn. Trong HPC, chi phí gỡ một lỗi
+segfault do tranh chấp bộ nhớ có thể lớn hơn nhiều so với chi phí viết thêm vài
+chục dòng kiểm tra.
+
+\subsection{Hộp đen và quy mô mô hình}
+
+Bài báo thẳng thắn thừa nhận khó khăn khi giải thích vì sao mô hình này tốt hơn
+mô hình khác. LLM là hộp đen: dữ liệu huấn luyện, kiến trúc và chiến lược tối ưu
+không được công bố đầy đủ. Có thể giả định dữ liệu huấn luyện chứa nhiều mã nguồn
+công khai, nhưng không rõ có bao nhiêu mã song song chất lượng cao, bao nhiêu
+thảo luận về TBB, coroutine hay MPI. Quy mô mô hình cũng là yếu tố mờ: các ước
+lượng bên ngoài đặt ChatGPT-5 khoảng 600 tỉ tham số, Claude khoảng 175 tỉ, LLaMA
+khoảng 400 tỉ, và một số mô hình nhỏ hơn khoảng 31 tỉ. Những con số này không đủ
+để giải thích kết quả, vì chất lượng dữ liệu và căn chỉnh quan trọng không kém quy
+mô.
+
+Hệ quả phương pháp luận là không nên suy ra “mô hình lớn hơn luôn tốt hơn cho
+HPC”. Cần đánh giá trên đúng bài toán, đúng toolchain và đúng tiêu chí. Một mô
+hình nhỏ được tinh chỉnh trên mã song song có thể vượt mô hình lớn tổng quát
+trong miền hẹp — đây cũng là động lực của các công trình như HPC-Coder, OMPGPT
+hay MPIRigen.
+
+\subsection{Hàm ý thực tiễn}
+
+\subsubsection{Khi nào nên dùng LLM cho mã HPC}
+
+Kết quả gợi ý ba mức sử dụng:
+
+\begin{itemize}
+  \item \textbf{Phù hợp}: tạo bản nháp cho các mẫu song song quen thuộc (vòng lặp
+        OpenMP, async, thuật toán song song), đặc biệt khi bài toán đơn giản và
+        có kiểm tra đầu ra rõ ràng.
+  \item \textbf{Cần giám sát chặt}: mã coroutine, mã MPI có truyền thông phức
+        tạp, mã có quản lý bộ nhớ thủ công. Đây là nơi lỗi ngữ nghĩa tập trung.
+  \item \textbf{Chưa nên tin}: các tuyên bố về hiệu năng hoặc khả năng mở rộng
+        nếu chưa đo. Không có cách nào thay thế phép đo thực nghiệm.
+\end{itemize}
+
+\subsubsection{Quy trình kiểm duyệt đề xuất}
+
+Dựa trên các lỗi quan sát được, có thể áp dụng quy trình năm bước:
+
+\begin{enumerate}
+  \item \textbf{Biên dịch với cảnh báo}: bật \code{-Wall -Wextra}, coi cảnh báo
+        là lỗi tiềm năng. Lỗi cú pháp là tầng dễ nhất nhưng vẫn cần loại bỏ.
+  \item \textbf{Chạy trên dữ liệu nhỏ}: dùng ảnh nhỏ, ít vòng lặp để kiểm tra
+        nhanh tính đúng trước khi đo hiệu năng.
+  \item \textbf{Kiểm tra đầu ra}: so sánh ảnh với tham chiếu; kiểm tra định dạng
+        tệp (P4/P5), kích thước, header.
+  \item \textbf{Đo mở rộng}: chạy với nhiều mức lõi/nút, vẽ thông lượng; xác nhận
+        tham số số luồng có hiệu lực thật.
+  \item \textbf{Soát các điểm ngữ nghĩa}: vòng đời coroutine, quyền sở hữu bộ
+        nhớ, kích thước buffer MPI, mốc đo thời gian.
+\end{enumerate}
+
+Bảng~\ref{tab:checklist} chuyển các bước này thành danh mục kiểm tra cụ thể.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Danh mục kiểm tra mã song song do LLM sinh.}
+\label{tab:checklist}
+\begin{tabularx}{\textwidth}{@{}p{2.8cm} X@{}}
+\toprule
+\textbf{Nhóm} & \textbf{Điểm cần kiểm tra} \\
+\midrule
+Cú pháp & Biên dịch sạch với \code{-Wall -Wextra}; không dùng API không tồn tại; kiểu iterator đúng \\
+Tham số & \code{-t}/\code{-p} được phân tích và \emph{sử dụng}; kiểm tra giá trị biên (0, 1, lớn hơn số lõi) \\
+Số luồng & Xác nhận backend (TBB/OpenMP); dùng đúng API giới hạn; đo để chứng minh \\
+Coroutine & \code{final\_suspend} phù hợp; \code{promise\_type} có \code{return\_void}/\code{return\_value}; không giải phóng hai lần \\
+Bộ nhớ & Cấp phát/giải phóng cân xứng; kiểm tra biên; tránh chia sẻ giả \\
+MPI & \code{sendcount}/\code{recvcount} khớp; kiểu dữ liệu khớp; root nhận đủ dữ liệu; xử lý trường hợp $P=1$ \\
+Định dạng & Header và dữ liệu cùng định dạng (P4 với 1 bit, P5 với 8 bit); kích thước tệp hợp lệ \\
+Đo đạc & Timer bao đúng phần tính toán; loại I/O; ghi rõ số lần lặp và cấu hình \\
+Hiệu năng & Đường cong mở rộng có dốc; so sánh với mốc tuần tự; kiểm tra hiệu suất \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Hạn chế của nghiên cứu}
+
+Có thể phân loại các hạn chế theo bốn mối đe dọa tính hợp lệ.
+
+\subsubsection{Tính hợp lệ về cấu trúc}
+
+Bài toán Mandelbrot là song song hiển nhiên, không có trao đổi dữ liệu giữa các
+đơn vị tính toán. Vì vậy, nó không kiểm tra được các lỗi đồng bộ phức tạp, trao
+đổi halo, collective nhiều bước hay phụ thuộc dữ liệu — những nơi LLM có thể sai
+nhiều hơn. Kết quả về “mã MPI chạy được” chủ yếu nói về khung phân vùng và gom
+dữ liệu, không nói về chất lượng của một bộ giải thực thụ.
+
+\subsubsection{Tính hợp lệ nội tại}
+
+Mỗi biến thể chỉ được sinh một lần với một prompt, không lặp lại nhiều lần, không
+thay đổi nhiệt độ hay cách diễn đạt. Do đó không có phân tích thống kê về độ biến
+thiên. Việc sửa lỗi bởi con người cũng tạo ra yếu tố chủ quan: mức độ “tối thiểu”
+của một bản sửa có thể khác nhau giữa các lỗi. Ngoài ra, tiêu chí “ảnh đúng” được
+kiểm tra trực quan, không có so sánh điểm ảnh tự động với ảnh tham chiếu.
+
+\subsubsection{Tính hợp lệ bên ngoài}
+
+Thực nghiệm chỉ dùng một trình biên dịch (GCC 11.5.0), một backend (TBB 2022.2),
+một nền tảng CPU và một cụm. Kết quả có thể khác trên Clang, trên OpenMP thật,
+trên GPU hoặc trên kiến trúc many-core. Bốn mô hình được đánh giá cũng chỉ là một
+lát cắt tại thời điểm nghiên cứu; các mô hình mới như Gemini, DeepSeek-Coder hay
+Grok chưa được xét.
+
+\subsubsection{Tính hợp lệ của kết luận}
+
+Một số kết luận dựa trên quan sát định tính về hình dạng đường cong, không có
+kiểm định thống kê. Các bảng tổng hợp có vài điểm không nhất quán (đã nêu ở
+Phần~\ref{sec:ketqua}), nên việc trích dẫn con số cụ thể cần đối chiếu với bảng
+chi tiết. Cuối cùng, COCOMO không được thiết kế cho HPC, nên các suy luận về chi
+phí chỉ mang tính tương đối.

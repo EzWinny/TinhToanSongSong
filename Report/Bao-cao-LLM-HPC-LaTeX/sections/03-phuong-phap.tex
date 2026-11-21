@@ -1,0 +1,225 @@
+\phant{PHƯƠNG PHÁP ĐÁNH GIÁ}\label{sec:phuongphap}
+
+\subsection{Thiết kế tổng thể}
+
+Đơn vị phân tích là một cặp (mô hình ngôn ngữ, biến thể lập trình). Với bốn mô
+hình và năm biến thể, thiết kế có $4\times5=20$ chương trình. Mỗi chương trình
+được sinh từ một prompt cố định, biên dịch, chạy, sửa lỗi tối thiểu và đo đạc
+theo cùng một quy trình. Cách bố trí này cho phép so sánh theo hai chiều: giữa
+các mô hình trên cùng một biến thể, và giữa các biến thể trong cùng một mô hình.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Ma trận thực nghiệm: bốn mô hình $\times$ năm biến thể.}
+\label{tab:matrix}
+\begin{tabularx}{\textwidth}{@{}l *{4}{>{\centering\arraybackslash}X}@{}}
+\toprule
+\textbf{Biến thể} & \textbf{ChatGPT-4} & \textbf{ChatGPT-5} & \textbf{Claude} & \textbf{LLaMA} \\
+\midrule
+C++11 bất đồng bộ        & C11 & C11 & C11 & C11 \\
+C++17 thuật toán song song & C17 & C17 & C17 & C17 \\
+C++20 coroutine          & C20 & C20 & C20 & C20 \\
+OpenMP                   & OMP & OMP & OMP & OMP \\
+MPI+OpenMP               & MPI & MPI & MPI & MPI \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Mỗi ô là một lần sinh độc lập. Bài báo không lặp lại nhiều lần cho mỗi ô, không
+thay đổi nhiệt độ hay cách diễn đạt prompt. Hệ quả là kết quả mô tả \emph{một}
+mẫu đầu ra tiêu biểu, không phải phân phối đầy đủ của mô hình. Đổi lại, thiết kế
+giữ được tính nhất quán: mọi so sánh đều dựa trên cùng một điều kiện sinh mã.
+
+\subsection{Yêu cầu chức năng và tiêu chí chấp nhận}
+
+Mỗi chương trình phải thỏa mãn đồng thời các yêu cầu sau:
+
+\begin{enumerate}[label=\textbf{Y\arabic*.},leftmargin=1.6cm]
+  \item Biên dịch được bằng GCC 11.5.0 trên nền Linux của cụm thử nghiệm.
+  \item Chạy được với tham số dòng lệnh \code{-t <số luồng>}; riêng bản MPI dùng
+        \code{-p <số phân vùng>}.
+  \item Xuất ảnh Mandelbrot ra tệp theo định dạng PBM/PGM, không cần thư viện
+        đồ họa ngoài.
+  \item In thời gian chạy \emph{không bao gồm} I/O.
+  \item Cho kết quả hình ảnh đúng: tập Mandelbrot hiện rõ, không đen toàn bộ,
+        không lệch màu do sai định dạng.
+\end{enumerate}
+
+Ba tiêu chí đánh giá được định nghĩa như sau:
+
+\begin{itemize}
+  \item \textbf{Biên dịch (build)}: chương trình biên dịch thành công mà không
+        cần sửa mã nguồn.
+  \item \textbf{Thực thi (runtime)}: chương trình chạy đến khi kết thúc mà không
+        treo, không crash, không báo lỗi bộ nhớ.
+  \item \textbf{Tính đúng (correctness)}: ảnh đầu ra đúng về mặt trực quan so với
+        ảnh tham chiếu.
+\end{itemize}
+
+Cần nhấn mạnh rằng “biên dịch được” không kéo theo “chạy đúng”, và “chạy được”
+không kéo theo “tôn trọng số luồng”. Ba tiêu chí này độc lập với nhau; khoảng
+cách giữa chúng chính là một phần quan trọng của kết quả.
+
+\subsection{Thiết kế prompt}
+
+Ba prompt được dùng nguyên văn cho mọi mô hình. Prompt P1 dùng chung cho ba biến
+thể bộ nhớ chia sẻ, chỉ thay phần trong ngoặc nhọn; P2 dùng cho OpenMP; P3 dùng
+cho MPI+OpenMP.
+
+\begin{lstlisting}[language={},caption={Prompt P1 -- bộ nhớ chia sẻ với C++11/17/20.},label={lst:p1},numbers=none,basicstyle=\ttfamily\small]
+Write a parallel code for the Mandelbrot set using C++ {11 async future,
+17 parallel algorithms, 20 coroutines} and write the output to the PBM
+format. Make the number of threads configurable with the command line
+option -t and print the runtime excluding IO.
+\end{lstlisting}
+
+\begin{lstlisting}[language={},caption={Prompt P2 -- OpenMP.},label={lst:p2},numbers=none,basicstyle=\ttfamily\small]
+Write a parallel code for the Mandelbrot set using C++ using OpenMP and
+write the output to the PBM format. Make the number of threads
+configurable with the command line option -t and print the runtime
+excluding IO.
+\end{lstlisting}
+
+\begin{lstlisting}[language={},caption={Prompt P3 -- MPI+OpenMP.},label={lst:p3},numbers=none,basicstyle=\ttfamily\small]
+Write a distributed code using MPI for the Mandelbrot set and using
+OpenMP for parallelism in C++ and write the output to the PBM format.
+Make the number of partitions configurable with the command line
+option -p and print the runtime excluding IO.
+\end{lstlisting}
+
+Mỗi mệnh đề trong prompt có một mục đích kiểm thử:
+
+\begin{itemize}
+  \item \textbf{“using C++ \{11, 17, 20\}”}: buộc mô hình chọn đúng cơ chế của
+        từng phiên bản chuẩn, thay vì dùng OpenMP cho mọi trường hợp.
+  \item \textbf{“PBM format”}: tạo đầu ra có thể kiểm tra bằng mắt và bằng tệp,
+        đồng thời loại bỏ phụ thuộc vào thư viện đồ họa.
+  \item \textbf{“-t” / “-p”}: kiểm tra khả năng phân tích dòng lệnh và — quan
+        trọng hơn — khả năng \emph{sử dụng} tham số đó trong phần tính toán.
+  \item \textbf{“excluding IO”}: tách chi phí tính toán khỏi chi phí ghi ảnh, cần
+        thiết cho phép đo mở rộng.
+\end{itemize}
+
+Với MPI, prompt ban đầu chưa đủ. Nếu không nêu rõ “số phân vùng cấu hình được”,
+mã sinh ra có xu hướng cho mọi tiến trình tính lại toàn bộ tập Mandelbrot rồi
+chỉ ghi phần của mình. Chương trình khi đó trông như song song nhưng không chia
+việc, và hiệu năng không tăng theo số nút. Việc bổ sung ràng buộc này là một ví
+dụ cụ thể cho thấy chất lượng đặc tả ảnh hưởng trực tiếp đến chất lượng mã.
+
+\subsection{Quy trình kiểm định}
+
+Quy trình gồm năm bước, áp dụng giống nhau cho mọi chương trình:
+
+\begin{enumerate}
+  \item \textbf{Biên dịch}: dùng GCC 11.5.0, ghi nhận toàn bộ lỗi và cảnh báo.
+  \item \textbf{Sửa lỗi biên dịch}: tác giả sửa với thay đổi tối thiểu, chỉ để
+        chương trình biên dịch được; không thiết kế lại thuật toán.
+  \item \textbf{Thực thi}: chạy với một luồng và nhiều luồng (hoặc một và nhiều
+        tiến trình), kiểm tra treo, crash, lỗi bộ nhớ, kết quả bất thường.
+  \item \textbf{Sửa lỗi thực thi}: tiếp tục sửa tối thiểu, ghi lại nguyên nhân
+        gốc và cách khắc phục.
+  \item \textbf{Kiểm tra tính đúng}: mở ảnh, so sánh trực quan với ảnh tham
+        chiếu; với mã MPI, kiểm tra cả trường hợp một tiến trình và nhiều tiến
+        trình.
+\end{enumerate}
+
+Mỗi lỗi được ghi vào nhật ký với các trường: mô hình, biến thể, loại lỗi (biên
+dịch/thực thi/đúng đắn), thông điệp lỗi, nguyên nhân gốc, cách sửa, số dòng thay
+đổi và mức độ khó. Cách ghi này cho phép phân loại lỗi ở Phần~\ref{sec:ketqua}
+và tách \emph{triệu chứng} khỏi \emph{nguyên nhân}.
+
+Một điểm phương pháp luận cần nêu rõ: sau khi sửa, chương trình được đo hiệu
+năng. Vì vậy kết quả mở rộng phản ánh chất lượng của “mã sau sửa”, không phải
+chất lượng nguyên bản. Điều này hợp lý nếu mục tiêu là đánh giá năng suất thực
+tế — người dùng luôn phải sửa trước khi dùng — nhưng cần tránh diễn giải quá mức
+thành “LLM sinh mã chạy đúng ngay”.
+
+\subsection{Độ đo}
+
+\subsubsection{Tỉ lệ thành công}
+
+Với mỗi mô hình, tỉ lệ thành công của từng tiêu chí được tính trên toàn bộ năm
+chương trình:
+\begin{equation}
+  R_{\text{crit}} = \frac{\#\{\text{chương trình đạt tiêu chí crit}\}}{5}\times100\%.
+\end{equation}
+Cách tính này cho phép so sánh trực tiếp giữa các mô hình, nhưng che khuất sự
+khác biệt giữa các biến thể. Vì vậy báo cáo trình bày thêm bảng lỗi chi tiết
+theo từng biến thể.
+
+\subsubsection{Kích thước và chi phí mã}
+
+Số dòng mã (LOC) được đo bằng công cụ \code{cloc}, bao gồm cả chú thích, trước
+và sau khi sửa. Chi phí phát triển được ước lượng bằng mô hình COCOMO thông qua
+công cụ \code{scc}. Công thức cơ bản của COCOMO:
+\begin{equation}
+  \text{Effort} = a \cdot (\text{KLOC})^{b},
+\end{equation}
+với $a,b$ phụ thuộc loại dự án. COCOMO được thiết kế cho phần mềm tuần tự, không
+mô hình hóa chi phí đồng bộ, truyền thông hay gỡ lỗi song song. Vì vậy con số
+COCOMO chỉ nên đọc như một thước đo tương đối giữa các chương trình cùng loại,
+không phải dự báo tuyệt đối.
+
+\subsubsection{Thông lượng và tăng tốc}
+
+Thông lượng được đo bằng số cập nhật điểm ảnh mỗi giây
+(\term{pixel updates per second}). Với ảnh $W\times H$ và $I_{\max}$ vòng lặp,
+một cách hiểu thận trọng là đại lượng tỉ lệ nghịch với thời gian tính toán của
+cùng một khối lượng công việc:
+\begin{equation}
+  \text{Throughput} \;\propto\; \frac{W\cdot H\cdot I_{\max}}{T_{\text{compute}}}.
+\end{equation}
+Khi so sánh các đường cong, cần chú ý cả \emph{độ dốc} (khả năng mở rộng) lẫn
+\emph{độ cao tuyệt đối} (hiệu năng nền). Một đường phẳng nằm cao có thể là dấu
+hiệu chương trình luôn dùng toàn bộ lõi, không phải dấu hiệu mở rộng tốt.
+
+Tăng tốc và hiệu suất được tính theo Công thức~\eqref{eq:speedup}. Với thí
+nghiệm phân tán, $P$ là số nút (1, 2, 4, 8, 12), mỗi nút một rank MPI và 20 lõi
+OpenMP.
+
+\subsection{Môi trường thực nghiệm}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Cấu hình phần cứng và phần mềm của thực nghiệm.}
+\label{tab:env}
+\begin{tabularx}{\textwidth}{@{}p{4.2cm} X@{}}
+\toprule
+\textbf{Thành phần} & \textbf{Cấu hình} \\
+\midrule
+Cụm & rostam, Đại học Bang Louisiana; phân vùng medusa gồm 16 nút \\
+CPU & Intel Xeon Gold 6148 @ 2,40 GHz, 20 lõi/nút \\
+Bộ nhớ & 92 GB/nút \\
+Trình biên dịch & GCC 11.5.0 \\
+MPI & OpenMPI 5.0.7 \\
+Backend cho C++17 & Intel TBB 2022.2 \\
+Ảnh bộ nhớ chia sẻ & $1920\times1080$ điểm ảnh, 1000 vòng lặp \\
+Ảnh phân tán & $12000\times80000$ điểm ảnh, 1000 vòng lặp \\
+Cấu hình đo phân tán & 1, 2, 4, 8, 12 nút; 1 rank MPI/nút; 20 lõi/nút \\
+Công cụ đo mã & \code{cloc}, \code{scc} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Việc dùng một cấu hình duy nhất giúp so sánh công bằng nhưng giới hạn khả năng
+ngoại suy. Kết quả có thể khác trên Clang, trên OpenMP thật (không qua TBB), trên
+GPU hoặc trên kiến trúc many-core. Phần~\ref{sec:thaoluan} thảo luận các mối đe
+dọa này.
+
+\subsection{Tính tái lập và kiểm soát chất lượng}
+
+Mã sinh ra và mã tham chiếu được công bố trên GitHub và Zenodo \cite{diehl2026}.
+Việc công bố cả mã lỗi, bản sửa và ảnh đầu ra cho phép người đọc tái lập từng
+bước. Trong quá trình đánh giá, nhóm tác giả giữ nguyên prompt, thứ tự chạy và
+cách đo; chỉ thay đổi những dòng cần thiết để chương trình hoạt động. Mọi thay
+đổi được ghi lại, nhờ đó có thể phân biệt lỗi của mô hình với can thiệp của con
+người.
+
+Một hạn chế cần nêu là mỗi cấu hình chỉ được đo một lần. Bài báo không báo cáo
+số lần lặp, độ lệch chuẩn hay khoảng tin cậy. Với các phép đo có biến thiên nhỏ
+như thông lượng trung bình trên 20 lõi, sai số có thể chấp nhận được; nhưng với
+các điểm gần biên (ví dụ bước nhảy 2$\to$4 nút), cần thận trọng khi diễn giải.
+Đây là lý do báo cáo tập trung vào \emph{xu hướng} và \emph{nguyên nhân} hơn là
+so sánh chênh lệch nhỏ giữa các đường cong.
