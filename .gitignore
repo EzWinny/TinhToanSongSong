@@ -1,3 +1,17 @@
 # Cấu trúc/tool nội bộ, không đưa vào repository
 .agents/
 .serena/
+
+# File sinh ra khi chạy demo
+Demo/mandelbrot/*.exe
+Demo/mandelbrot/*.pgm
+Demo/mandelbrot/results.txt
+Demo/speedup.png
+
+# File sinh ra khi biên dịch LaTeX
+Report/Bao-cao-LLM-HPC-LaTeX/*.aux
+Report/Bao-cao-LLM-HPC-LaTeX/*.log
+Report/Bao-cao-LLM-HPC-LaTeX/*.toc
+Report/Bao-cao-LLM-HPC-LaTeX/*.lof
+Report/Bao-cao-LLM-HPC-LaTeX/*.lot
+Report/Bao-cao-LLM-HPC-LaTeX/*.out
