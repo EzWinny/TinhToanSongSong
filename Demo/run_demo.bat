@@ -19,3 +19,7 @@ echo.
 echo === Ve bieu do ===
 cd /d %~dp0
 python plot_speedup.py mandelbrot\results.txt
+
+echo.
+echo Da xong. Nhan phim bat ky de dong cua so...
+pause >nul

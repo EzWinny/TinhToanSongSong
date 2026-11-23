@@ -11,18 +11,24 @@ struct Config {
     int threads = 1;
     double center = -0.75;
     double scale = 3.0;
+    std::string schedule = "dynamic";
+    int chunk = 0;
+    bool ignore_t = false;
 };
 
 inline Config parse_args(int argc, char** argv) {
     Config c;
     for (int i = 1; i < argc; ++i) {
         std::string a = argv[i];
+        if (a == "--ignore-t") { c.ignore_t = true; continue; }
         if (i + 1 >= argc) break;
         std::string v = argv[++i];
         if (a == "-t") c.threads = std::stoi(v);
         else if (a == "-w") c.width = std::stoi(v);
         else if (a == "-h") c.height = std::stoi(v);
         else if (a == "-i") c.max_iter = std::stoi(v);
+        else if (a == "-s") c.schedule = v;
+        else if (a == "-b") c.chunk = std::stoi(v);
     }
     if (c.threads < 1) c.threads = 1;
     return c;
