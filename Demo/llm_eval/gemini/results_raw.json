@@ -1,0 +1,177 @@
+{
+  "env": {
+    "timestamp": "2026-11-26 00:49:03",
+    "os": "Windows 11",
+    "cpu_threads": 12,
+    "compiler": "E:\\Strawberry\\c\\bin\\g++.exe",
+    "compiler_version": "g++.exe (MinGW-W64 x86_64-ucrt-posix-seh, built by Brecht Sanders, r8) 13.2.0",
+    "has_tbb": false,
+    "has_mpi": false,
+    "repeats": 3
+  },
+  "reference": {
+    "seq_time": 0.4133556666666667,
+    "omp_times": {
+      "1": 0.41271399999999997,
+      "2": 0.204823,
+      "4": 0.10607799999999999,
+      "8": 0.05545836666666667,
+      "12": 0.04014193333333333
+    },
+    "config": "1920x1080, 1000 iter"
+  },
+  "results": [
+    {
+      "variant": "async",
+      "label": "C++11 std::async",
+      "file": "async.cpp",
+      "status": "PASS",
+      "build_ok": true,
+      "warnings": 0,
+      "runtime_ok": true,
+      "image_ok": true,
+      "static_notes": [],
+      "times": {
+        "1": 1.3110466666666667,
+        "2": 0.6519263333333334,
+        "4": 0.32826466666666665,
+        "8": 0.16896966666666668,
+        "12": 0.129052
+      },
+      "time_source": "stdout",
+      "speedup_max": 10.16,
+      "flat_line_suspect": false,
+      "errors": [],
+      "loc": 133,
+      "compiler_stderr": "",
+      "image_info": {
+        "file": "mandelbrot.pbm",
+        "bytes": 259213,
+        "valid": true,
+        "issue": null,
+        "magic": "P4",
+        "width": 1920,
+        "height": 1080,
+        "maxval": 1,
+        "pixel_min": 0,
+        "pixel_max": 255,
+        "distinct_levels": 2,
+        "preview": "preview_raw_async.png"
+      }
+    },
+    {
+      "variant": "par_algo",
+      "label": "C++17 parallel algorithms",
+      "file": "par_algo.cpp",
+      "status": "SKIPPED_NO_TBB",
+      "build_ok": false,
+      "warnings": 0,
+      "runtime_ok": false,
+      "image_ok": false,
+      "static_notes": [
+        "Co dung tbb::global_control"
+      ],
+      "times": {},
+      "time_source": null,
+      "speedup_max": null,
+      "flat_line_suspect": null,
+      "errors": [],
+      "loc": 163
+    },
+    {
+      "variant": "coroutine",
+      "label": "C++20 coroutines",
+      "file": "coroutine.cpp",
+      "status": "PASS",
+      "build_ok": true,
+      "warnings": 0,
+      "runtime_ok": true,
+      "image_ok": true,
+      "static_notes": [],
+      "times": {
+        "1": 1.1444366666666665,
+        "2": 0.5725006666666667,
+        "4": 0.296511,
+        "8": 0.15778966666666666,
+        "12": 0.11317333333333333
+      },
+      "time_source": "stdout",
+      "speedup_max": 10.11,
+      "flat_line_suspect": false,
+      "errors": [],
+      "loc": 205,
+      "compiler_stderr": "",
+      "image_info": {
+        "file": "mandelbrot.pbm",
+        "bytes": 259213,
+        "valid": true,
+        "issue": null,
+        "magic": "P4",
+        "width": 1920,
+        "height": 1080,
+        "maxval": 1,
+        "pixel_min": 0,
+        "pixel_max": 255,
+        "distinct_levels": 2,
+        "preview": "preview_raw_coroutine.png"
+      }
+    },
+    {
+      "variant": "openmp",
+      "label": "OpenMP",
+      "file": "openmp.cpp",
+      "status": "PASS",
+      "build_ok": true,
+      "warnings": 0,
+      "runtime_ok": true,
+      "image_ok": true,
+      "static_notes": [],
+      "times": {
+        "1": 1.4923333333333333,
+        "2": 0.7523333333333333,
+        "4": 0.37233333333333335,
+        "8": 0.19066666666666668,
+        "12": 0.15666666666666668
+      },
+      "time_source": "stdout",
+      "speedup_max": 9.53,
+      "flat_line_suspect": false,
+      "errors": [],
+      "loc": 100,
+      "compiler_stderr": "",
+      "image_info": {
+        "file": "mandelbrot.pbm",
+        "bytes": 524301,
+        "valid": true,
+        "issue": null,
+        "magic": "P4",
+        "width": 2048,
+        "height": 2048,
+        "maxval": 1,
+        "pixel_min": 0,
+        "pixel_max": 255,
+        "distinct_levels": 2,
+        "preview": "preview_raw_openmp.png"
+      }
+    },
+    {
+      "variant": "mpi_omp",
+      "label": "MPI+OpenMP",
+      "file": "mpi_omp.cpp",
+      "status": "STATIC_ONLY_NO_MPI",
+      "build_ok": false,
+      "warnings": 0,
+      "runtime_ok": false,
+      "image_ok": false,
+      "static_notes": [
+        "Dung MPI_Gatherv (an toan khi H khong chia het cho P)"
+      ],
+      "times": {},
+      "time_source": null,
+      "speedup_max": null,
+      "flat_line_suspect": null,
+      "errors": [],
+      "loc": 199
+    }
+  ]
+}

@@ -8,6 +8,8 @@ Demo/mandelbrot/*.pgm
 Demo/mandelbrot/results.txt
 Demo/speedup.png
 Demo/mandel_view.png
+Demo/llm_eval/**/_build/
+Demo/llm_eval/**/*.exe
 
 # File sinh ra khi biên dịch LaTeX
 Report/*.aux

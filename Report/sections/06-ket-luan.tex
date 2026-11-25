@@ -11,12 +11,13 @@ lạc quan vừa thận trọng.
 chạy và mở rộng được. ChatGPT-5 đạt 100\% ở cả ba tiêu chí biên dịch, thực thi và
 tính đúng — một kết quả đáng chú ý với một bài toán đa mô hình lập trình. Trong
 một số trường hợp, mã LLM còn vượt mã con người: bất đồng bộ của ChatGPT-4 và
-OpenMP của ChatGPT-5.
+OpenMP của ChatGPT-5 (theo phần văn bản bài báo gốc; xem lưu ý đối chiếu đồ thị
+tại Phần~\ref{sec:ketqua}).
 
 Ở mặt hạn chế, khoảng cách giữa “biên dịch được” và “chạy đúng” rất lớn với các
-mô hình yếu. ChatGPT-4 biên dịch 100\% nhưng chỉ 20\% chương trình được tính là
-chạy không lỗi; Claude đạt 40\%; LLaMA 0\%. Các lỗi tập trung ở ba nhóm: kiểm
-soát số luồng (nhầm OpenMP với TBB), vòng đời coroutine (\code{final\_suspend},
+mô hình yếu. ChatGPT-4 biên dịch 100\% nhưng chỉ 20\% (1/5) chương trình chạy
+không lỗi; Claude đạt 40\% theo Bảng~III gốc (3/5 = 60\% theo Bảng~I--II); LLaMA
+đạt 0\% theo các bảng tổng hợp. Các lỗi tập trung ở ba nhóm: kiểm soát số luồng (nhầm OpenMP với TBB), vòng đời coroutine (\code{final\_suspend},
 \code{promise\_type}, giải phóng hai lần) và định dạng đầu ra (P4/P5). Đây đều là
 lỗi ngữ nghĩa hoặc lỗi hệ sinh thái, không phải lỗi cú pháp.
 

@@ -10,50 +10,77 @@ lớn giữa “biên dịch được” và “chạy đúng”, đồng thời
 \begin{table}[H]
 \centering
 \small
-\caption{Tỉ lệ thành công trên toàn bộ chương trình bộ nhớ chia sẻ và phân tán
-(Bảng III trong bài báo \cite{diehl2026}).}
+\caption{Tỉ lệ thành công trên toàn bộ năm biến thể: số gốc ở Bảng~III của bài báo
+\cite{diehl2026} đặt cạnh kết quả tính lại từ Bảng~I--II (dựng chi tiết ở
+Bảng~\ref{tab:detail}).}
 \label{tab:success}
 \begin{tabular}{@{}lcccc@{}}
 \toprule
 \textbf{Tiêu chí} & \textbf{ChatGPT-5} & \textbf{ChatGPT-4} & \textbf{Claude} & \textbf{LLaMA} \\
 \midrule
-Biên dịch   & 100\% & 100\% & 100\% & 40\% \\
-Thực thi    & 100\% & 20\%  & 40\%  & 0\% \\
-Tính đúng   & 100\% & 100\% & 100\% & 40\% \\
+Biên dịch & 100\% (5/5) & 100\% (5/5) & 100\% (5/5) & 40\% / 60\% (3/5)$^*$ \\
+Thực thi  & 100\% (5/5) & 20\% (1/5)  & 40\% / 60\% (3/5)$^*$ & 0\% (0/5)$^\dagger$ \\
+Tính đúng & 100\% (5/5) & 100\% (5/5) & 100\% (5/5) & 40\% / 60\% (3/5)$^*$ \\
 \bottomrule
 \end{tabular}
+\par\vspace{4pt}
+{\footnotesize\raggedright
+$^*$ Số trước dấu ``/'' là giá trị in trong Bảng~III của bài báo gốc; số sau là
+tỉ lệ tính trực tiếp từ 5 biến thể trong Bảng~I và Bảng~II gốc.
+$^\dagger$ Bảng~III và Bảng~I--II đều ghi 0\% (0/5), trong khi phần văn bản
+Mục~VI.C gốc nêu LLaMA thực thi thành công một chương trình (20\%).\par}
 \end{table}
 
 Ba quan sát rút ra từ bảng:
 
 \begin{enumerate}
   \item \textbf{Cú pháp không phải rào cản chính.} Ba trong bốn mô hình biên dịch
-        100\% chương trình. Ngay cả LLaMA, mô hình yếu nhất, cũng đạt 40\% — nghĩa
-        là phần lớn lỗi không nằm ở cú pháp C++ mà ở ngữ nghĩa song song và kiến
-        thức hệ sinh thái.
-  \item \textbf{Thực thi là điểm rơi lớn nhất.} ChatGPT-4 biên dịch 100\% nhưng chỉ
-        20\% chương trình được tính là chạy không lỗi; Claude đạt 40\%; LLaMA 0\%.
-        Đây là bằng chứng định lượng cho luận điểm: mã song song có thể “trông
-        đúng” mà vẫn sai ở tầng điều khiển luồng, vòng đời tài nguyên hoặc định
-        dạng đầu ra.
+        100\% (5/5) chương trình. Ngay cả LLaMA, mô hình yếu nhất, cũng đạt 40\%
+        theo Bảng~III gốc và 60\% (3/5: bất đồng bộ, OpenMP, MPI+OpenMP) nếu tính
+        từ Bảng~I--II — nghĩa là phần lớn lỗi không nằm ở cú pháp C++ mà ở ngữ
+        nghĩa song song và kiến thức hệ sinh thái.
+  \item \textbf{Thực thi là điểm rơi lớn nhất.} ChatGPT-4 biên dịch 100\% nhưng
+        chỉ 20\% (1/5, duy nhất MPI+OpenMP) chạy không lỗi; Claude đạt 40\% theo
+        Bảng~III gốc (3/5 = 60\% theo Bảng~I--II); LLaMA đạt 0\% (0/5) theo các
+        bảng tổng hợp. Đây là bằng chứng định lượng cho luận điểm: mã song song có
+        thể “trông đúng” mà vẫn sai ở tầng điều khiển luồng, vòng đời tài nguyên
+        hoặc định dạng đầu ra.
   \item \textbf{ChatGPT-5 là mô hình duy nhất đạt 100\% ở cả ba tiêu chí.} Điều
         đáng chú ý là nó không chỉ tránh lỗi mới mà còn sửa đúng các lỗi mà
         ChatGPT-4 mắc phải, cho thấy khả năng nắm bắt ngữ cảnh công cụ tốt hơn.
 \end{enumerate}
 
-\noindent\textit{Ghi chú về tính nhất quán của số liệu.} Bảng~\ref{tab:success}
-được giữ nguyên theo Bảng~III của bài báo gốc, nhưng có vài điểm không khớp hoàn
-toàn với các bảng chi tiết (Bảng~I và Bảng~II, dựng lại đầy đủ ở
-Bảng~\ref{tab:detail}). Cụ thể: phần văn bản gốc nói LLaMA thực thi thành công
-“một chương trình (20\%)” trong khi Bảng~III ghi 0\%; với Claude (Thực thi) và
-LLaMA (Biên dịch, Tính đúng), Bảng~III đều ghi 40\% nhưng Bảng~I và Bảng~II đánh
-dấu đạt cho 3/5 biến thể (tức 60\% — nhiều khả năng Bảng~III chỉ đếm trên 4 biến
-thể bộ nhớ chia sẻ ở tử số nhưng vẫn chia cho 5). Ngoài ra, số dòng thêm cho mã
-coroutine LLaMA được nêu là 39 ở phần văn bản và 37 ở chú thích Hình~3; trên
-đồ thị OpenMP (Hình~\ref{fig:scaling}d), đường dẫn đầu dùng ký hiệu ô vuông
-(ChatGPT-4) dù phần văn bản gốc gán kết quả vượt mã con người cho ChatGPT-5.
-Những điểm này không làm thay đổi kết luận định tính, nhưng cần lưu ý khi đối
-chiếu và trích dẫn số liệu.
+\noindent\textit{Đối chiếu tính nhất quán của dữ liệu trong bài báo gốc.} Khi đối
+chiếu xuyên suốt các bảng, hình vẽ và phần văn bản của \cite{diehl2026}, báo cáo
+ghi nhận sáu điểm không nhất quán nội tại trong chính bài báo gốc và trình bày
+minh bạch tại đây để người đọc tiện kiểm chứng:
+\begin{itemize}
+  \item \textbf{Bảng~III so với Bảng~I--II và Mục~VI.C:} Bảng~III ghi Claude (Thực
+        thi), LLaMA (Biên dịch) và LLaMA (Tính đúng) đều là 40\%, trong khi
+        Bảng~I--II đánh dấu đạt 3/5 biến thể (60\%) cho cả ba ô này; với LLaMA
+        (Thực thi), Bảng~III và Bảng~I--II đều cho 0\% (0/5) nhưng văn bản
+        Mục~VI.C viết “một chương trình (20\%)”.
+  \item \textbf{Vị trí lỗi \code{std::distance} của LLaMA:} Mục~VI.A.4 mô tả lỗi
+        biên dịch \code{std::distance} ở biến thể \emph{thuật toán song song}
+        (khớp Bảng~I: bất đồng bộ \code{Build = \checkmark}, thuật toán song song
+        \code{Build = $\times$}), nhưng Bảng~IV gốc lại xếp lỗi này vào dòng
+        \emph{bất đồng bộ}.
+  \item \textbf{Cơ chế đặt số luồng TBB:} Mục~VI.A.2 nêu đúng API
+        \code{tbb::global\_control}, còn cột cách khắc phục ở Bảng~IV gốc lại ghi
+        biến môi trường \code{TBB\_NUM\_THREADS} (không phải biến chuẩn của Intel
+        TBB).
+  \item \textbf{Số dòng thêm cho coroutine LLaMA:} Mục~VII gốc ghi thêm 39 dòng,
+        trong khi chú thích Fig.~3 gốc ghi 37 dòng.
+  \item \textbf{Số lõi trên một nút:} Mục~VI.A.1 gốc viết cần phóng lớn ảnh để mở
+        rộng tới 24 lõi, nhưng cấu hình phần cứng ở Mục~VIII và toàn bộ đồ thị
+        Fig.~6 gốc đều là 20 lõi/nút (Intel Xeon Gold 6148).
+  \item \textbf{Ký hiệu đồ thị OpenMP (Fig.~6d):} Mục~VIII.A gốc kết luận mã
+        OpenMP của ChatGPT-5 vượt các mã khác và mã con người, nhưng đường đạt
+        $6\times 10^9$ trên Fig.~6(d) gốc lại mang ký hiệu ô vuông của ChatGPT-4.
+\end{itemize}
+Báo cáo giữ nguyên số liệu trích từ bài báo gốc tại các bảng tương ứng, đồng thời
+lấy Bảng~I--II và phần mô tả phần cứng/đồ thị làm mốc đối chiếu để bảo đảm tính
+nhất quán nội bộ.
 
 \subsection{Bộ nhớ chia sẻ: lỗi theo từng mô hình}
 
@@ -71,8 +98,9 @@ dùng giá trị mặc định.
 
 Đây là lỗi “đặc tả bề mặt”: chương trình \emph{trông} có giao diện cấu hình, in
 ra hướng dẫn đúng, nhưng hành vi thực tế chỉ hỗ trợ một phần. Với phép đo mở rộng,
-hệ quả là không thể tăng kích thước ảnh để tạo đủ tải cho 20 lõi nếu không sửa
-mã. Nhóm tác giả phải thay đổi kích thước ảnh mặc định để phép đo có ý nghĩa.
+hệ quả là không thể tăng kích thước ảnh để tạo đủ tải cho 20 lõi (Mục~VI.A.1 gốc
+ghi 24 lõi, nhưng phần cứng thực tế ở Bảng~\ref{tab:env} là 20 lõi/nút) nếu không
+sửa mã. Nhóm tác giả phải thay đổi kích thước ảnh mặc định để phép đo có ý nghĩa.
 
 Lỗi thứ hai tinh vi hơn. Mã thuật toán song song giả định GCC dùng OpenMP cho
 \code{std::execution::par} và đặt biến môi trường \code{OPENMP\_NUM\_THREADS}
@@ -80,8 +108,10 @@ Lỗi thứ hai tinh vi hơn. Mã thuật toán song song giả định GCC dùn
 \code{OMP\_NUM\_THREADS}) để giới hạn số luồng. Thực tế, libstdc++ dùng Intel
 TBB, nên biến này bị bỏ qua và chương trình luôn chạy trên toàn bộ lõi. Cách sửa
 đúng là dùng API TBB, cụ thể \code{tbb::global\_control} với
-\code{max\_allowed\_parallelism}. Đây không phải lỗi cú pháp; nó đòi hỏi kiến
-thức về backend của thư viện chuẩn trên một trình biên dịch cụ thể.
+\code{max\_allowed\_parallelism} như Mục~VI.A.2 của bài báo (lưu ý Bảng~IV gốc
+nhắc \code{TBB\_NUM\_THREADS} nhưng biến này không tồn tại chuẩn trong TBB). Đây
+không phải lỗi cú pháp; nó đòi hỏi kiến thức về backend của thư viện chuẩn trên
+một trình biên dịch cụ thể.
 
 \subsubsection{ChatGPT-5: không có lỗi}
 
@@ -91,15 +121,18 @@ phân tích đầy đủ các tham số dòng lệnh — khắc phục lỗi c�
 không chỉ học cú pháp mà còn học được mẫu tích hợp giữa chuẩn C++ và backend cụ
 thể.
 
-\subsubsection{Claude: vòng đời coroutine}
+\subsubsection{Claude: vòng đời coroutine và số luồng}
 
-Toàn bộ mã của Claude biên dịch được. Ba biến thể async, thuật toán song song và
-OpenMP chạy đúng. Biến thể coroutine treo và không bao giờ kết thúc. Nguyên nhân
-là vòng lặp chờ trong Đoạn mã~\ref{lst:corobug}: \code{done()} không bao giờ trả
-về \code{true} vì coroutine dùng \code{final\_suspend = std::suspend\_never}. Khi
-coroutine kết thúc, frame bị hủy ngay; trạng thái “đã hoàn thành” không còn để
-quan sát (và truy cập handle sau khi tự hủy là hành vi không xác định). Đổi sang
-\code{std::suspend\_always} khắc phục được vấn đề.
+Toàn bộ mã của Claude biên dịch được và sau khi khắc phục lỗi đều cho ảnh kết quả
+đúng. Tuy nhiên ở tầng thực thi (Bảng~\ref{tab:detail}), trong bốn biến thể bộ nhớ
+chia sẻ chỉ có \emph{bất đồng bộ} và \emph{OpenMP} chạy đạt yêu cầu; hai biến thể
+còn lại đều bị đánh dấu lỗi thực thi. Biến thể coroutine treo và không bao giờ kết
+thúc. Nguyên nhân là vòng lặp chờ trong Đoạn mã~\ref{lst:corobug}: \code{done()}
+không bao giờ trả về \code{true} vì coroutine dùng
+\code{final\_suspend = std::suspend\_never}. Khi coroutine kết thúc, frame bị hủy
+ngay; trạng thái “đã hoàn thành” không còn để quan sát (và truy cập handle sau khi
+tự hủy là hành vi không xác định). Đổi sang \code{std::suspend\_always} khắc phục
+được vấn đề.
 
 Với thuật toán song song, mã sinh ra có một chú thích nhắc người dùng đặt số
 luồng, như trong Đoạn mã~\ref{lst:comment}. Chú thích này đúng về mặt kỹ thuật,
@@ -181,21 +214,23 @@ phục. Bảng~\ref{tab:taxonomy} phân loại theo tầng và mức độ khó.
 \begin{table}[H]
 \centering
 \small
-\caption{Tổng hợp lỗi tiêu biểu và cách khắc phục (rút gọn từ Bảng IV của bài báo).}
+\caption{Tổng hợp lỗi tiêu biểu và cách khắc phục (tổng hợp từ Mục~VI và Bảng~IV
+của bài báo gốc \cite{diehl2026}, khớp với Bảng~\ref{tab:detail}).}
 \label{tab:errors}
-\begin{tabularx}{\textwidth}{@{}p{1.9cm} p{2.1cm} X X@{}}
+\begin{tabularx}{\textwidth}{@{}p{1.9cm} p{2.3cm} X X@{}}
 \toprule
 \textbf{Mô hình} & \textbf{Biến thể} & \textbf{Lỗi quan sát} & \textbf{Cách khắc phục} \\
 \midrule
-ChatGPT-4 & Tất cả & Chỉ \code{-t} được phân tích; các tham số khác bị bỏ qua & Bổ sung phân tích dòng lệnh \\
-ChatGPT-4 & Song song & Giả định GCC dùng OpenMP; đặt \code{OPENMP\_NUM\_THREADS} (tên biến chuẩn là \code{OMP\_NUM\_THREADS}) nhưng backend là TBB & Dùng \code{tbb::global\_control} \\
-ChatGPT-5 & Tất cả & Không có lỗi & -- \\
+ChatGPT-4 & 4 biến thể chia sẻ & Chỉ \code{-t} được phân tích; các tham số khác bị bỏ qua & Bổ sung phân tích dòng lệnh \\
+ChatGPT-4 & Song song & Giả định GCC dùng OpenMP; đặt \code{OPENMP\_NUM\_THREADS} (chuẩn là \code{OMP\_NUM\_THREADS}) nhưng backend là TBB & Dùng \code{tbb::global\_control} \\
+ChatGPT-5 & Tất cả (5 biến thể) & Không có lỗi & -- \\
 Claude & Coroutine & Treo vì \code{done()} không bao giờ \code{true} do \code{final\_suspend = suspend\_never} & Đổi sang \code{suspend\_always} \\
 Claude & Song song & Chỉ có chú thích nhắc đặt số luồng, không thực hiện & Đặt số luồng qua TBB \\
-LLaMA & Bất đồng bộ & Ảnh đen; lỗi biên dịch \code{std::distance} & Sửa kiểu iterator \\
-LLaMA & Song song & \code{std::distance} sai; \code{execution\_policy\_tag} chưa khai báo & Bỏ biến không tồn tại, sửa lời gọi \\
-LLaMA & Coroutine & Promise mismatch; segfault do giải phóng hai lần; ảnh đen do P5 ghi vào P4 & Thêm \code{return\_void}, bỏ giải phóng thứ hai, đổi định dạng \\
-LLaMA & MPI+OpenMP & \code{free(): invalid pointer}; segfault do lệch buffer \code{MPI\_Gather}; đo thời gian sai & Sửa cấp phát/buffer; chỉnh mốc đo \\
+LLaMA & Bất đồng bộ & Ảnh đen (1 và nhiều luồng); bỏ qua \code{-t} (Bảng~IV gốc xếp lỗi \code{std::distance} vào mục này) & Sửa phần tính/ghi ảnh và đặt số luồng \\
+LLaMA & Song song & Lỗi biên dịch \code{std::distance} (Mục~VI.A.4) và \code{execution\_policy\_tag} chưa khai báo; bỏ qua \code{-t} & Sửa kiểu iterator, bỏ biến không tồn tại \\
+LLaMA & Coroutine & Promise mismatch; segfault do giải phóng hai lần; ảnh đen do P5 ghi vào P4; bỏ qua \code{-t} & Thêm \code{return\_void}, bỏ giải phóng thứ hai, đổi định dạng \\
+LLaMA & OpenMP & Bỏ qua \code{-t}; luôn dùng toàn bộ hoặc số lõi đặt trước & Gán đúng số luồng OpenMP \\
+LLaMA & MPI+OpenMP & \code{free(): invalid pointer}; segfault do lệch buffer \code{MPI\_Gather}; đo thời gian trước gather & Sửa cấp phát/buffer; chỉnh mốc đo \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -233,7 +268,8 @@ nếu chỉ tin vào “chương trình chạy không crash”.
 Hình~\ref{fig:loc} trình bày số dòng mã do \code{cloc} đo được cho bốn biến thể
 bộ nhớ chia sẻ. Nhìn chung, ChatGPT-5 và Claude sinh mã dài hơn ChatGPT-4 và
 LLaMA. Chỉ với LLaMA, nhóm tác giả phải thêm một lượng đáng kể dòng mới để chương
-trình coroutine hoạt động; các mã còn lại chủ yếu sửa vài dòng hiện có.
+trình coroutine hoạt động (Mục~VII gốc ghi 39 dòng, chú thích Fig.~3 gốc ghi 37
+dòng); các mã còn lại chủ yếu sửa vài dòng hiện có.
 
 \begin{figure}[H]
 \centering
@@ -397,7 +433,7 @@ thủ được huấn luyện riêng cho benchmark.
 Bất đồng bộ & ChatGPT-4 nhanh hơn mã sách nhờ thêm tối ưu & LLM có thể vượt ở mẫu đơn giản \\
 Thuật toán song song & Mã sách nhanh hơn ChatGPT-5 & Mã sách mở rộng tốt hơn \\
 Coroutine & Mã sách nhanh hơn ChatGPT-4/5 và Claude & Khoảng cách lớn nhất \\
-OpenMP & ChatGPT-5 nhanh hơn cả mã sách & Ngoại lệ nổi bật \\
+OpenMP & ChatGPT-5 nhanh hơn cả mã sách (theo văn bản gốc; xem lưu ý Hình~\ref{fig:scaling}d) & Ngoại lệ nổi bật \\
 MPI+OpenMP & Mã sách nhanh hơn mọi mã LLM & Cần phân tích truyền thông sâu hơn \\
 \bottomrule
 \end{tabularx}

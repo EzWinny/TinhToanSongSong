@@ -43,12 +43,14 @@ Bảng II trong bài báo. Ký hiệu \checkmark{} là không có lỗi, $\times
 \end{table}
 
 Bảng~\ref{tab:detail} cho thấy rõ hơn Bảng~\ref{tab:success}: ChatGPT-4 thất bại
-ở tầng thực thi cho cả bốn biến thể bộ nhớ chia sẻ, dù không có lỗi biên dịch;
-Claude chỉ thất bại ở tầng thực thi của coroutine và thuật toán song song (đạt 3/5
-biến thể); LLaMA biên dịch thành công 3/5 biến thể (bất đồng bộ, OpenMP và
-MPI+OpenMP), đạt tính đúng sau khi sửa ở 3/5 biến thể (thuật toán song song,
-OpenMP và MPI+OpenMP), nhưng thất bại ở tầng thực thi cho cả năm biến thể (xem
-thêm ghi chú đối chiếu với Bảng~\ref{tab:success} tại Phần~\ref{sec:ketqua}).
+ở tầng thực thi cho cả bốn biến thể bộ nhớ chia sẻ (đạt 1/5 = 20\%, duy nhất
+MPI+OpenMP), dù không có lỗi biên dịch; Claude chỉ thất bại ở tầng thực thi của
+coroutine và thuật toán song song (đạt 3/5 = 60\%, trong khi Bảng~III gốc ghi
+40\%); LLaMA biên dịch thành công 3/5 biến thể (60\%: bất đồng bộ, OpenMP và
+MPI+OpenMP) và đạt tính đúng sau khi sửa ở 3/5 biến thể (60\%: thuật toán song
+song, OpenMP và MPI+OpenMP — cả hai đều ghi 40\% ở Bảng~III gốc), nhưng thất bại
+ở tầng thực thi cho cả năm biến thể (0/5 = 0\%). Xem mục đối chiếu chi tiết tại
+Phần~\ref{sec:ketqua}.
 
 \clearpage
 \section*{PHỤ LỤC B. KHUNG MPI+OPENMP THAM CHIẾU}

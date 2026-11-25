@@ -1,7 +1,9 @@
 import os
 import re
+import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 import matplotlib
@@ -14,16 +16,70 @@ SRC = HERE / "mandelbrot"
 SEQ = SRC / "mandel_seq.exe"
 OMP = SRC / "mandel_omp.exe"
 PAT = re.compile(r"mode=(\w+)\s+threads=(\d+)\s+time=([\d.]+)")
+RUN_ENV = os.environ.copy()
+
+
+def find_omp_gxx():
+    """Tim g++ ho tro OpenMP (tranh MinGW 32-bit cu thieu libpthread)."""
+    candidates = []
+    seen = set()
+
+    def add(p):
+        if not p:
+            return
+        pp = Path(p)
+        key = str(pp).lower()
+        if pp.is_file() and key not in seen:
+            seen.add(key)
+            candidates.append(pp)
+
+    # Thu tat ca g++ co trong PATH, sau do den cac thu muc MinGW-W64 pho bien
+    for d in os.environ.get("PATH", "").split(os.pathsep):
+        if d:
+            add(Path(d) / "g++.exe")
+            add(Path(d) / "g++")
+    for p in (
+        r"E:\Strawberry\c\bin\g++.exe",
+        r"C:\msys64\ucrt64\bin\g++.exe",
+        r"C:\msys64\mingw64\bin\g++.exe",
+        r"C:\mingw64\bin\g++.exe",
+    ):
+        add(p)
+    add(shutil.which("g++"))
+
+    probe_src = "#include <omp.h>\nint main(){return omp_get_max_threads()<1;}\n"
+    with tempfile.TemporaryDirectory() as tmp:
+        cpp = Path(tmp) / "probe.cpp"
+        exe = Path(tmp) / "probe.exe"
+        cpp.write_text(probe_src, encoding="utf-8")
+        for gxx in candidates:
+            env = os.environ.copy()
+            env["PATH"] = str(gxx.parent) + os.pathsep + env.get("PATH", "")
+            try:
+                r = subprocess.run(
+                    [str(gxx), "-std=c++17", "-fopenmp", str(cpp), "-o", str(exe)],
+                    env=env, capture_output=True, text=True,
+                )
+            except OSError:
+                continue
+            if r.returncode == 0:
+                return gxx
+    raise RuntimeError(
+        "Khong tim thay g++ ho tro OpenMP (-fopenmp). "
+        "Hay cai MinGW-W64 (vd: MSYS2 UCRT64 hoac Strawberry C) va them vao PATH."
+    )
 
 
 def compile_all():
+    gxx = find_omp_gxx()
+    RUN_ENV["PATH"] = str(gxx.parent) + os.pathsep + os.environ.get("PATH", "")
     for name in ("mandel_seq.cpp", "mandel_omp.cpp"):
         subprocess.run(
-            ["g++", "-O2", "-std=c++17", "-fopenmp", "-Wall", name,
+            [str(gxx), "-O2", "-std=c++17", "-fopenmp", "-Wall", name,
              "-o", name.replace(".cpp", ".exe")],
-            cwd=SRC, check=True,
+            cwd=SRC, env=RUN_ENV, check=True,
         )
-    print("Da bien dich xong.\n")
+    print(f"Da bien dich xong bang: {gxx}\n")
 
 
 def ask_int(prompt, default):
@@ -49,7 +105,7 @@ def run(exe, args):
     for _ in range(3):
         r = subprocess.run(
             [str(exe)] + [str(a) for a in args],
-            cwd=SRC, capture_output=True, text=True, check=True,
+            cwd=SRC, env=RUN_ENV, capture_output=True, text=True, check=True,
         )
         m = PAT.search(r.stdout)
         if not m:

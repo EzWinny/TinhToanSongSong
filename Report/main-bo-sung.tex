@@ -1,0 +1,204 @@
+\documentclass[12pt,a4paper,oneside]{article}
+
+% ===================== NGÔN NGỮ VÀ PHÔNG CHỮ =====================
+\usepackage{fontspec}
+\setmainfont{Times New Roman}
+\setsansfont{Arial}
+\setmonofont{Consolas}[Scale=0.88]
+\usepackage[vietnamese,provide=*]{babel}
+
+% ===================== BỐ CỤC =====================
+\usepackage{geometry}
+\geometry{top=2.5cm,bottom=2.5cm,left=3.0cm,right=2.0cm}
+\usepackage{setspace}
+\setstretch{1.28}
+\usepackage{indentfirst}
+\setlength{\parindent}{1.0cm}
+\setlength{\emergencystretch}{2.5em}
+
+% ===================== TOÁN VÀ ĐỒ HỌA =====================
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{tikz}
+
+% ===================== BẢNG =====================
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{multirow}
+\renewcommand{\arraystretch}{1.15}
+
+% ===================== TIÊU ĐỀ, MỤC LỤC =====================
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage{fancyhdr}
+\usepackage[font=small,labelfont=bf,justification=justified,singlelinecheck=false,skip=6pt]{caption}
+
+\titleformat{\section}[block]{\centering\bfseries\large}{PHẦN \thesection.}{0.6em}{}
+\titlespacing*{\section}{0pt}{0pt}{16pt}
+\titleformat{\subsection}[hang]{\bfseries\normalsize}{\thesubsection}{0.6em}{}
+\titlespacing*{\subsection}{0pt}{14pt}{6pt}
+\titleformat{\subsubsection}[hang]{\itshape\normalsize}{\thesubsubsection}{0.6em}{}
+\titlespacing*{\subsubsection}{0pt}{10pt}{4pt}
+
+\renewcommand{\cfttoctitlefont}{\hfill\bfseries\large}
+\renewcommand{\cftaftertoctitle}{\hfill\null}
+\renewcommand{\cftloftitlefont}{\hfill\bfseries\large}
+\renewcommand{\cftafterloftitle}{\hfill\null}
+\renewcommand{\cftlottitlefont}{\hfill\bfseries\large}
+\renewcommand{\cftafterlottitle}{\hfill\null}
+\setlength{\cftsecnumwidth}{2.4em}
+\setlength{\cftsubsecnumwidth}{3.0em}
+\renewcommand{\cftsecfont}{\bfseries}
+
+\pagestyle{fancy}
+\fancyhf{}
+\setlength{\headheight}{14pt}
+\fancyhead[L]{\small\itshape Đánh giá mã C++ song song do LLM sinh}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ===================== MÃ NGUỒN =====================
+\usepackage{listings}
+\addto\captionsvietnamese{%
+  \renewcommand{\refname}{TÀI LIỆU THAM KHẢO}%
+  \renewcommand{\lstlistingname}{Đoạn mã}%
+}
+\lstset{
+  language=C++,
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{blue!65!black}\bfseries,
+  commentstyle=\color{green!40!black}\itshape,
+  stringstyle=\color{red!60!black},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  numbersep=8pt,
+  frame=single,
+  rulecolor=\color{gray!55},
+  breaklines=true,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  tabsize=2,
+  captionpos=b,
+  xleftmargin=1.6em,
+  framexleftmargin=1.2em,
+  aboveskip=8pt,
+  belowskip=8pt
+}
+
+% ===================== LIÊN KẾT =====================
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  citecolor=black,
+  urlcolor=blue!60!black,
+  pdftitle={Danh gia ma C++ hien dai va MPI+OpenMP do LLM sinh cho bai toan Mandelbrot (Bo sung Gemini 4 Hydrogen)},
+  pdfauthor={Bao cao Bo mon Tinh toan song song}
+}
+\usepackage{enumitem}
+\setlist[itemize]{topsep=4pt,itemsep=2pt,parsep=0pt}
+\setlist[enumerate]{topsep=4pt,itemsep=2pt,parsep=0pt}
+
+% ===================== LỆNH DÙNG NHIỀU =====================
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\term}[1]{\textit{#1}}
+\newcommand{\phant}[1]{\clearpage\section{#1}}
+
+\begin{document}
+
+% ===================== TRANG BÌA =====================
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{tikzpicture}[remember picture,overlay]
+  \draw[line width=2.2pt]
+    ([xshift=1.25cm,yshift=-1.25cm]current page.north west)
+    rectangle
+    ([xshift=-1.25cm,yshift=1.25cm]current page.south east);
+  \draw[line width=0.6pt]
+    ([xshift=1.45cm,yshift=-1.45cm]current page.north west)
+    rectangle
+    ([xshift=-1.45cm,yshift=1.45cm]current page.south east);
+\end{tikzpicture}
+\begin{center}
+  {\large TRƯỜNG ĐẠI HỌC KHOA HỌC TỰ NHIÊN\par}
+  \vspace{2pt}
+  {\large\bfseries KHOA TOÁN -- CƠ -- TIN HỌC\par}
+
+  \vspace{0.75cm}
+  \includegraphics[width=2.5cm]{figures/logo.png}\par
+
+  \vspace{1.05cm}
+  {\Large BÁO CÁO\par}
+  \vspace{4pt}
+  {\Large\bfseries BỘ MÔN TÍNH TOÁN SONG SONG\par}
+
+  \vspace{1.0cm}
+  {\large Đề tài:\par}
+  \vspace{0.4cm}
+  {\bfseries\Large ĐÁNH GIÁ MÃ C++ HIỆN ĐẠI VÀ MPI+OPENMP\\
+   DO LLM SINH CHO BÀI TOÁN TẬP MANDELBROT\\
+   CÓ KHẢ NĂNG MỞ RỘNG\par}
+  \vspace{0.35cm}
+  {\itshape\small Evaluating LLM-Generated Modern C++ and MPI+OpenMP\\
+   Codes for Scalable Mandelbrot Set Computation\par}
+  \vspace{0.25cm}
+  {\small\bfseries (Phiên bản mở rộng -- Bổ sung kiểm chứng thực nghiệm trên Gemini 4 Hydrogen)\par}
+
+  \vspace{1.05cm}
+  \begin{tabular}{@{}l@{\hspace{0.5cm}}l@{}}
+    Sinh viên thực hiện: & Nguyễn Quang Anh \\[2pt]
+                        & Nguyễn Như Bảo \\[2pt]
+                        & Đồng Đức Dương \\[2pt]
+                        & Trần Lý Dũng \\[0.3cm]
+    Giảng viên hướng dẫn: & TS. Nguyễn Hải Vinh \\[2pt]
+                          & TS. Mạc Đăng Trường \\
+  \end{tabular}
+
+  \vfill
+  {\large Hà Nội, 11 -- 2026\par}
+  \vspace{0.4cm}
+\end{center}
+\end{titlepage}
+
+% ===================== PHẦN ĐẦU =====================
+\pagenumbering{roman}
+\pagestyle{plain}
+
+\tableofcontents
+\clearpage
+
+\listoffigures
+\clearpage
+
+\listoftables
+\clearpage
+
+\input{sections/00-viet-tat}
+
+% ===================== THÂN BÀI =====================
+\clearpage
+\pagenumbering{arabic}
+\pagestyle{fancy}
+
+\input{sections/01-gioi-thieu}
+\input{sections/02-co-so-ly-thuyet}
+\input{sections/03-phuong-phap}
+\input{sections/04-ket-qua}
+\input{sections/09-thuc-nghiem-gemini4}
+\input{sections/05-thao-luan}
+\input{sections/06-ket-luan}
+\input{sections/07-phu-luc}
+
+\clearpage
+\addcontentsline{toc}{section}{TÀI LIỆU THAM KHẢO}
+\begin{thebibliography}{99}
+\small
+\input{sections/08-tai-lieu}
+\end{thebibliography}
+
+\end{document}
