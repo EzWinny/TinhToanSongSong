@@ -10,9 +10,9 @@ Demo/speedup.png
 Demo/mandel_view.png
 
 # File sinh ra khi biên dịch LaTeX
-Report/Bao-cao-LLM-HPC-LaTeX/*.aux
-Report/Bao-cao-LLM-HPC-LaTeX/*.log
-Report/Bao-cao-LLM-HPC-LaTeX/*.toc
-Report/Bao-cao-LLM-HPC-LaTeX/*.lof
-Report/Bao-cao-LLM-HPC-LaTeX/*.lot
-Report/Bao-cao-LLM-HPC-LaTeX/*.out
+Report/*.aux
+Report/*.log
+Report/*.toc
+Report/*.lof
+Report/*.lot
+Report/*.out

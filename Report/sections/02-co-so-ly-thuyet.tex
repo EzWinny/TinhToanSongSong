@@ -408,3 +408,39 @@ phân tán, và đo cả tính đúng lẫn khả năng mở rộng thực tế.
 C++20 — cơ chế mới nhất và đang được các khung như Kokkos, HPX quan tâm — chưa
 được đánh giá trong bối cảnh sinh mã tự động. Đây chính là điểm mà
 \cite{diehl2026} bổ sung.
+
+\subsection{Bối cảnh mô hình hiện nay và hướng bổ sung}\label{subsec:mo-hinh-hien-nay}
+
+Bốn mô hình trong nghiên cứu gốc đại diện cho thế hệ đầu năm 2026. Từ đó đến
+nay, nhiều họ mô hình mới hơn đã được công bố, tiêu biểu là các thế hệ kế tiếp
+của GPT, Claude và LLaMA, cùng các mô hình mã nguồn mở chuyên mã như
+DeepSeek-Coder, Qwen-Coder, và các hệ thống Gemini hay Grok — chính là những cái
+tên mà bài báo gốc đã nêu trong phần hướng phát triển \cite{diehl2026}. Vì vậy,
+kết quả của báo cáo này phản ánh một \emph{thời điểm} cụ thể của công nghệ, chứ
+không phải khẳng định mô hình này hơn hẳn mô hình kia trong hiện tại.
+
+Nếu muốn bổ sung một hoặc hai mô hình hiện nay, cách làm đúng là giữ nguyên
+phương pháp đã dùng: ba prompt P1/P2/P3, cùng bộ năm biến thể, cùng toolchain
+(GCC và backend song song), cùng quy trình sửa lỗi tối thiểu, và cùng lưới đo
+mở rộng. Khi đó các ô mới có thể điền thẳng vào Bảng~\ref{tab:success} và
+Bảng~\ref{tab:detail} mà không cần đổi định nghĩa tiêu chí. Nên chọn một mô hình
+\term{biên đóng} truy cập qua API và một mô hình \term{trọng số mở} chạy local:
+cái trước đại diện cho năng lực tiên phong, cái sau giúp người đọc tái lập phép
+đo. Đồng thời nên lặp nhiều lần sinh cho mỗi ô và báo cáo phân phối kết quả,
+vì một lần sinh như hiện tại chỉ là một mẫu tiêu biểu.
+
+Điều đáng lưu ý là các công trình gần đây thường dùng \emph{phương pháp đo khác},
+nên không nên so trực tiếp con số của chúng với con số ở đây. Một hướng là chạy
+nhiều bài toán thay vì một bài Mandelbrot duy nhất, nhằm đo mức độ khái quát của
+mô hình; hướng khác lại tập trung vào kernel hoặc vào bài toán hoàn thành mã như
+đã nêu trong Bảng~\ref{tab:related} \cite{nichols2024hpccoder,chaturvedi2025hpccoderv2}.
+Ngoài tỉ lệ biên dịch và \term{pass@k}, một số nghiên cứu còn dùng phân tích tĩnh,
+profiling hoặc đo trên nhiều ngôn ngữ \cite{chen2023llm4hpc}. Những chỉ số này trả
+lời những câu hỏi khác: bài toán đơn kiểm tra được mức độ đúng và khả năng mở rộng
+sâu, trong khi bộ nhiều bài toán kiểm tra được tính khái quát. Một thiết kế bổ sung
+hợp lý là dùng cả hai lớp: trước tiên sàng nhiều bài toán để tìm mô hình tốt, sau
+đó mới đo sâu scaling trên một bài đại diện như Mandelbrot.
+
+Phần này chỉ đề xuất bối cảnh và phương pháp; báo cáo \emph{không} có số liệu đo
+cho các mô hình mới nêu trên. Việc thêm bảng so sánh tương ứng đòi hỏi chạy thực
+nghiệm thật và sẽ được tính đến trong một đợt mở rộng tiếp theo.
