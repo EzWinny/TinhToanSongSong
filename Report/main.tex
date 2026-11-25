@@ -5,7 +5,7 @@
 \setmainfont{Times New Roman}
 \setsansfont{Arial}
 \setmonofont{Consolas}[Scale=0.88]
-\usepackage[vietnamese]{babel}
+\usepackage[vietnamese,provide=*]{babel}
 
 % ===================== BỐ CỤC =====================
 \usepackage{geometry}
@@ -45,11 +45,11 @@
 \titlespacing*{\subsubsection}{0pt}{10pt}{4pt}
 
 \renewcommand{\cfttoctitlefont}{\hfill\bfseries\large}
-\renewcommand{\cftaftertoctitle}{\hfill}
+\renewcommand{\cftaftertoctitle}{\hfill\null}
 \renewcommand{\cftloftitlefont}{\hfill\bfseries\large}
-\renewcommand{\cftafterloftitle}{\hfill}
+\renewcommand{\cftafterloftitle}{\hfill\null}
 \renewcommand{\cftlottitlefont}{\hfill\bfseries\large}
-\renewcommand{\cftafterlottitle}{\hfill}
+\renewcommand{\cftafterlottitle}{\hfill\null}
 \setlength{\cftsecnumwidth}{2.4em}
 \setlength{\cftsubsecnumwidth}{3.0em}
 \renewcommand{\cftsecfont}{\bfseries}
@@ -63,6 +63,10 @@
 
 % ===================== MÃ NGUỒN =====================
 \usepackage{listings}
+\addto\captionsvietnamese{%
+  \renewcommand{\refname}{TÀI LIỆU THAM KHẢO}%
+  \renewcommand{\lstlistingname}{Đoạn mã}%
+}
 \lstset{
   language=C++,
   basicstyle=\ttfamily\footnotesize,

@@ -5,7 +5,7 @@
 
 int main(int argc, char** argv) {
     Config c = parse_args(argc, argv);
-    // Che do loi: nhan -t nhung co tinh dung toan bo lo de lo ra duong phang.
+    // Che do loi: nhan -t nhung co tinh dung toan bo loi de lo ra duong phang.
     omp_set_num_threads(c.ignore_t ? omp_get_num_procs() : c.threads);
 
     omp_sched_t sched = omp_sched_dynamic;

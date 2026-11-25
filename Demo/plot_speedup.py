@@ -1,10 +1,14 @@
+from pathlib import Path
 import re
 import sys
 
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-path = sys.argv[1] if len(sys.argv) > 1 else "mandelbrot/results.txt"
-text = open(path, encoding="utf-8").read()
+HERE = Path(__file__).resolve().parent
+path = Path(sys.argv[1]) if len(sys.argv) > 1 else HERE / "mandelbrot/results.txt"
+text = path.read_text(encoding="utf-8")
 
 base = None
 threads, speedups = [], []
@@ -26,6 +30,6 @@ plt.ylabel("Speedup")
 plt.title("Mandelbrot: speedup theo so luong")
 plt.legend()
 plt.grid(True)
-out = "speedup.png"
+out = HERE / "speedup.png"
 plt.savefig(out, dpi=150)
 print(f"Da luu {out} (thoi gian tuan tu = {base:.4f} s)")

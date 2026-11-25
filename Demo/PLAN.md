@@ -65,9 +65,9 @@ Mỗi mục đều có bước **"Theo bạn ...?"** trước khi chạy (ví d�
 | Hết thời gian | Chạy `run_demo.bat` (bản cũ, ~1 phút) rồi chiếu slide |
 | Terminal tương tác lỗi | Dùng bản `.bat`; các thông số vẫn sửa được bằng tay trong lệnh |
 | Ảnh PGM không mở được | Pillow đổi sang PNG (đã có sẵn) |
-| Máy không có MPI | Không đổi: phần phân tán vẫn chỉ chiếu biểu đồ Hình 7 |
+| Máy không có MPI | Không đổi: phần phân tán vẫn chỉ chiếu biểu đồ Hình 6 (Hình 7 của bài báo gốc) |
 | Số đo nhiễu | Mỗi cấu hình chạy 3 lần, lấy trung bình (thêm vào `interactive.py`) |
 
 ## 8. Phạm vi ngoài demo
 
-Không thêm model AI mới trong đợt này (chưa có số liệu thật). Phần bổ sung model mới đã được ghi thành đề xuất có phương pháp ở Phần 6.3.3 của báo cáo.
+Không thêm model AI mới trong đợt này (chưa có số liệu thật). Phần bổ sung model mới đã được ghi thành đề xuất có phương pháp ở Mục 2.7 và Phần 6.3.3 của báo cáo.

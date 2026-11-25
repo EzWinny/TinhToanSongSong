@@ -81,11 +81,14 @@ nghiệm với nhiều cách diễn đạt prompt, nhiệt độ khác nhau. Đ�
 chuyển từ nghiên cứu tình huống sang đánh giá có thể khái quát hóa.
 
 Cách bổ sung cụ thể (chọn mô hình, giữ nguyên prompt/toolchain, lặp lại phép đo và
-đối chiếu với nghiên cứu dùng phương pháp khác) đã được trình bày tại
-Mục~\ref{subsec:mo-hinh-hien-nay}. Một giả thuyết đáng kiểm chứng là các mô hình
-mới khắc phục được phần lớn lỗi cú pháp nhưng vẫn yếu ở khả năng mở rộng; đây chỉ
-là giả thuyết, không phải kết luận, vì chưa có phép đo nào trong nghiên cứu này
-xác nhận.
+đối chiếu với nghiên cứu dùng phương pháp khác) cùng bối cảnh từ ba công trình độc
+lập cuối năm 2026 \cite{bantel2026agentic,cui2026hpcbench,nogueira2026openmp} đã
+được trình bày tại Mục~\ref{subsec:mo-hinh-hien-nay}. Các kết quả độc lập này bước
+đầu cho thấy thế hệ mô hình mới (kể cả trọng số mở) cải thiện rõ tính đúng và tăng
+tốc trên OpenMP/tasking, nhưng vẫn gặp giới hạn khi bị tuần tự hóa ngầm hoặc siết
+chặt ngưỡng speedup; để kiểm chứng trên cùng thước đo với coroutine C++20 và
+MPI+OpenMP, vẫn cần chạy thực nghiệm trực tiếp với bộ prompt P1/P2/P3 của bài toán
+Mandelbrot.
 
 \subsubsection{Mở rộng tiêu chí}
 

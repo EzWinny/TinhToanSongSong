@@ -81,6 +81,10 @@ def plot(xs, ys, name, title):
     print(f"Da luu {out}")
 
 
+def safe_div(a, b):
+    return a / b if b > 0 else 0.0
+
+
 def menu_compare():
     args = dims()
     t = ask_int("So luong OpenMP", 8)
@@ -88,7 +92,7 @@ def menu_compare():
     seq, _ = run(SEQ, args)
     omp, actual = run(OMP, args + ["-t", t])
     print(f"\nTuan tu: {seq:.4f}s | OpenMP ({actual} luong): {omp:.4f}s"
-          f" | Speedup: {seq / omp:.2f}x")
+          f" | Speedup: {safe_div(seq, omp):.2f}x")
     print(f"Ban doan: {guess or '(khong tra loi)'}\n")
 
 
@@ -96,16 +100,17 @@ def menu_threads():
     args = dims()
     seq, _ = run(SEQ, args)
     raw = input("Nhap cac so luong (vd: 1 2 4 8 16): ").strip() or "1 2 4 8 16"
+    req_list = [int(x) for x in re.split(r"[\s,]+", raw) if x]
     xs, ys, labels = [], [], []
-    for t in (int(x) for x in raw.split()):
+    for t in req_list:
         sec, actual = run(OMP, args + ["-t", t])
         xs.append(actual)
-        ys.append(seq / sec)
+        ys.append(safe_div(seq, sec))
         labels.append(str(t))
         print(f"  -t {t:>2} -> thuc te {actual:>2} luong: {sec:.4f}s")
     bars(labels, ys)
     plot(xs, ys, "speedup.png", "Mandelbrot: speedup theo so luong")
-    print("Nhac: duong phang co the la 'luon chay toan bo lo', khong phai mo rong tot.\n")
+    print("Nhac: duong phang co the la 'luon chay toan bo loi', khong phai mo rong tot.\n")
 
 
 def menu_schedule():
@@ -119,23 +124,45 @@ def menu_schedule():
         labels.append(s)
         times.append(sec)
         print(f"  {s:>7}: {sec:.4f}s ({actual} luong)")
-    bars(labels, [max(times) / v for v in times])
+    bars(labels, [safe_div(max(times), v) for v in times])
     print("Nhan xet: Mandelbrot mat can bang tu nhien -> dynamic/guided thuong tot hon static.\n")
 
 
 def menu_bug():
     guess = input("Go -t 4 thi may chay bao nhieu luong? ").strip()
     args = dims()
-    normal, na = run(OMP, args + ["-t", 4])
-    buggy, ba = run(OMP, args + ["-t", 4, "--ignore-t"])
-    print(f"\nBinh thuong     : threads={na}, {normal:.4f}s")
-    print(f"Bo qua -t (loi) : threads={ba}, {buggy:.4f}s")
+    seq, _ = run(SEQ, args)
+    req_list = [1, 2, 4, 8]
+    ys_ok, ys_bug = [], []
+    print("\nQuet -t 1, 2, 4, 8 (Binh thuong vs Bo qua -t):")
+    for t in req_list:
+        normal, na = run(OMP, args + ["-t", t])
+        buggy, ba = run(OMP, args + ["-t", t, "--ignore-t"])
+        ys_ok.append(safe_div(seq, normal))
+        ys_bug.append(safe_div(seq, buggy))
+        print(f"  -t {t}: binh thuong ({na:>2} luong) {normal:.4f}s [{ys_ok[-1]:.2f}x]"
+              f" | loi ({ba:>2} luong) {buggy:.4f}s [{ys_bug[-1]:.2f}x]")
+    plt.figure(figsize=(7, 4.5))
+    plt.plot(req_list, ys_ok, "o-", label="Binh thuong (ton trong -t)")
+    plt.plot(req_list, ys_bug, "s--", label="Bo qua -t (duong phang)")
+    plt.xlabel("Tham so -t yeu cau")
+    plt.ylabel("Speedup so voi tuan tu")
+    plt.title("Che do LOI: co tham so -t nhung khong dung")
+    plt.legend()
+    plt.grid(True)
+    out = HERE / "speedup.png"
+    plt.savefig(out, dpi=150, bbox_inches="tight")
+    plt.close()
+    print(f"Da luu bieu do duong phang tai {out}")
     print(f"Ban doan: {guess or '(khong tra loi)'}")
     print("Day chinh la loi cua ChatGPT-4 trong bao cao: co tham so nhung khong dung.\n")
 
 
 def menu_image():
-    which = ask_str("Xem anh seq hay omp?", "omp")
+    which = ask_str("Xem anh seq hay omp?", "omp").lower()
+    if which not in ("seq", "omp"):
+        print("Chi ho tro 'seq' hoac 'omp'.\n")
+        return
     src = SRC / f"mandel_{which}.pgm"
     if not src.exists():
         print("Chua co anh. Chay menu 1 truoc.\n")
@@ -169,7 +196,7 @@ def main():
             continue
         try:
             action[1]()
-        except (subprocess.CalledProcessError, RuntimeError, ValueError) as e:
+        except (subprocess.CalledProcessError, RuntimeError, ValueError, ZeroDivisionError) as e:
             print("Loi:", e, "\n")
 
 
@@ -177,5 +204,5 @@ if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print("\nTam bien demo.")
+        print("\nTam biet demo.")
         sys.exit(0)
