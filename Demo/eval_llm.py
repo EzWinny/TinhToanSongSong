@@ -6,6 +6,7 @@ Chay tu thu muc Demo/:
 """
 
 import argparse
+import io
 import json
 import os
 import platform
@@ -293,11 +294,23 @@ def run_reference(gxx, env, threads, repeats):
             return statistics.mean(vals)
 
         base_args = ["-w", "1920", "-h", "1080", "-i", "1000"]
+        pixels = 1920 * 1080
         t_seq = measure(seq_exe, base_args)
         omp_times = {}
+        omp_throughput = {}
         for t in threads:
-            omp_times[t] = measure(omp_exe, base_args + ["-t", str(t)])
-        return {"seq_time": t_seq, "omp_times": omp_times, "config": "1920x1080, 1000 iter"}
+            sec = measure(omp_exe, base_args + ["-t", str(t)])
+            omp_times[t] = sec
+            omp_throughput[t] = pixels / sec if sec > 0 else 0.0
+        return {
+            "seq_time": t_seq,
+            "omp_times": omp_times,
+            "omp_throughput": omp_throughput,
+            "width": 1920,
+            "height": 1080,
+            "pixels": pixels,
+            "config": "1920x1080, 1000 iter",
+        }
 
 
 def evaluate_variant(variant, src_path, label, flags, gxx, env, has_tbb, model_dir, stage, threads, repeats, timeout):
@@ -312,6 +325,9 @@ def evaluate_variant(variant, src_path, label, flags, gxx, env, has_tbb, model_d
         "image_ok": False,
         "static_notes": [],
         "times": {},
+        "pixels": None,
+        "throughput": {},
+        "throughput_max": None,
         "time_source": None,
         "speedup_max": None,
         "flat_line_suspect": None,
@@ -399,6 +415,13 @@ def evaluate_variant(variant, src_path, label, flags, gxx, env, has_tbb, model_d
             res["time_source"] = "wall_fallback"
 
     res["runtime_ok"] = all_runs_ok and bool(res["times"])
+    im_info = res.get("image_info") or {}
+    if im_info.get("width") and im_info.get("height"):
+        pixels = int(im_info["width"]) * int(im_info["height"])
+        res["pixels"] = pixels
+        res["throughput"] = {t: pixels / sec for t, sec in res["times"].items() if sec > 0}
+        if max(threads) in res["throughput"]:
+            res["throughput_max"] = round(res["throughput"][max(threads)], 1)
     if res["runtime_ok"] and min(threads) in res["times"] and max(threads) in res["times"]:
         t_min = res["times"][min(threads)]
         t_max = res["times"][max(threads)]
@@ -420,42 +443,51 @@ def evaluate_variant(variant, src_path, label, flags, gxx, env, has_tbb, model_d
 
 
 def plot_scaling(results, ref, threads, model_name, stage, out_png):
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.4))
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11.5, 4.5))
     has_curve = False
 
-    # Moc tham chieu OpenMP cuc bo
-    if ref and ref["omp_times"]:
+    # Moc tham chieu OpenMP cuc bo (he quy chieu pixel updates/s nhu bai bao goc)
+    if ref and ref.get("omp_times"):
         ref_t1 = ref["omp_times"][min(threads)]
         ref_sp = [ref_t1 / ref["omp_times"][t] for t in threads]
-        ax1.plot(threads, ref_sp, "k--", linewidth=1.6, label="Tham chieu local (OpenMP)")
-        ax2.plot(threads, [ref["omp_times"][t] for t in threads], "k--", linewidth=1.6, label="Tham chieu local (OpenMP)")
+        ref_tp = [ref["omp_throughput"][t] / 1e7 for t in threads]
+        ref_lbl = f"Tham chieu local (OpenMP, {ref['width']}x{ref['height']})"
+        ax1.plot(threads, ref_tp, "ks--", linewidth=1.6, markersize=5, label=ref_lbl)
+        ax2.plot(threads, ref_sp, "ks--", linewidth=1.6, markersize=5, label="Tham chieu local (OpenMP)")
 
-    ax1.plot(threads, [t / min(threads) for t in threads], ":", color="gray", label="Tuyen tinh ly tuong")
+    ax2.plot(threads, [t / min(threads) for t in threads], ":", color="gray", label="Tuyen tinh ly tuong")
 
     for r in results:
         if r["runtime_ok"] and all(t in r["times"] for t in threads):
             has_curve = True
             t1 = r["times"][min(threads)]
             ys = [t1 / r["times"][t] for t in threads]
-            ts = [r["times"][t] for t in threads]
-            ax1.plot(threads, ys, "o-", label=r["label"])
-            ax2.plot(threads, ts, "o-", label=r["label"])
+            im = r.get("image_info") or {}
+            dim = f" ({im['width']}x{im['height']})" if im.get("width") and im.get("height") else ""
+            if r.get("throughput") and all(t in r["throughput"] for t in threads):
+                tp = [r["throughput"][t] / 1e7 for t in threads]
+                ax1.plot(threads, tp, "o-", label=f"{r['label']}{dim}")
+            ax2.plot(threads, ys, "o-", label=r["label"])
 
-    ax1.set_xlabel("Tham so -t")
-    ax1.set_ylabel("Speedup so voi -t 1")
-    ax1.set_title(f"{model_name} ({stage}) - Speedup")
+    ax1.set_xlabel("So luong (-t)")
+    ax1.set_ylabel("Cap nhat diem anh / giay (x 10^7 px/s)")
+    ax1.set_title(f"{model_name} ({stage}) - Thong luong (pixel updates/s)")
+    ax1.set_xticks(threads)
     ax1.grid(True, alpha=0.4)
     ax1.legend(fontsize=8)
 
-    ax2.set_xlabel("Tham so -t")
-    ax2.set_ylabel("Thoi gian (giay)")
-    ax2.set_title(f"{model_name} ({stage}) - Thoi gian chay")
+    ax2.set_xlabel("So luong (-t)")
+    ax2.set_ylabel("Tang toc S(P) = T(1) / T(P)")
+    ax2.set_title(f"{model_name} ({stage}) - Tang toc tuong doi")
+    ax2.set_xticks(threads)
     ax2.grid(True, alpha=0.4)
     ax2.legend(fontsize=8)
 
     fig.tight_layout()
-    fig.savefig(out_png, dpi=150)
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png", dpi=150)
     plt.close(fig)
+    Path(out_png).write_bytes(buf.getvalue())
     return has_curve
 
 
@@ -468,11 +500,12 @@ def write_markdown_report(model_name, stage, env_info, results, ref, threads, ou
         f"- **Trình biên dịch:** `{env_info['compiler_version']}`",
         f"- **Hỗ trợ sẵn trên máy:** OpenMP = Có, C++20 coroutines = Có, Intel TBB = {'Có' if env_info['has_tbb'] else 'Không'}, MPI = {'Có' if env_info['has_mpi'] else 'Không'}",
         f"- **Dãy `-t` kiểm thử:** {threads} (lặp {env_info['repeats']} lần lấy trung bình)",
+        f"- **Hệ quy chiếu thông lượng:** `pixel updates per second` = `(W × H) / T_compute` (cùng định nghĩa Mục 3.5.3 & Hình 5 của bài báo gốc).",
         "",
         "## Tổng hợp theo biến thể",
         "",
-        "| Biến thể | Trạng thái | LOC | Biên dịch (cảnh báo) | Thực thi | Ảnh Netpbm | Speedup (-t max/-t 1) | Nghi ngờ bỏ qua -t | Ghi chú |",
-        "|---|---|---:|---|---|---|---|---|---|",
+        "| Biến thể | Trạng thái | LOC | Biên dịch (cảnh báo) | Thực thi | Ảnh Netpbm | Thông lượng max (×10⁷ px/s) | Speedup (-t max/-t 1) | Nghi ngờ bỏ qua -t | Ghi chú |",
+        "|---|---|---:|---|---|---|---|---|---|---|",
     ]
     for r in results:
         b = "✓" if r["build_ok"] else ("—" if r["status"] in ("MISSING", "SKIPPED_NO_TBB", "STATIC_ONLY_NO_MPI") else "×")
@@ -486,22 +519,25 @@ def write_markdown_report(model_name, stage, env_info, results, ref, threads, ou
             im = f"× ({im_info.get('issue','lỗi ảnh')})"
         else:
             im = "—"
+        tp = f"{r['throughput_max'] / 1e7:.2f}" if r.get("throughput_max") is not None else "—"
         sp = f"{r['speedup_max']:.2f}× ({r['time_source']})" if r["speedup_max"] is not None else "—"
         flat = "Có (đường phẳng)" if r["flat_line_suspect"] else ("Không" if r["flat_line_suspect"] is False else "—")
         notes = "; ".join(r["errors"] + r["static_notes"]) or "—"
         lines.append(
-            f"| {r['label']} | `{r['status']}` | {r.get('loc', '—')} | {b} | {rt} | {im} | {sp} | {flat} | {notes} |"
+            f"| {r['label']} | `{r['status']}` | {r.get('loc', '—')} | {b} | {rt} | {im} | {tp} | {sp} | {flat} | {notes} |"
         )
 
     if ref:
         t_min, t_max = min(threads), max(threads)
         sp_ref = ref["omp_times"][t_min] / ref["omp_times"][t_max]
+        tp_min = ref["omp_throughput"][t_min] / 1e7
+        tp_max = ref["omp_throughput"][t_max] / 1e7
         lines += [
             "",
             "## Mốc tham chiếu cục bộ (`Demo/mandelbrot/mandel_omp.cpp`, 1920×1080, 1000 vòng)",
             "",
-            f"- Tuần tự: `{ref['seq_time']:.4f} s`",
-            f"- OpenMP `-t {t_min}`: `{ref['omp_times'][t_min]:.4f} s` → `-t {t_max}`: `{ref['omp_times'][t_max]:.4f} s` (tăng tốc `{sp_ref:.2f}×`)",
+            f"- Tuần tự: `{ref['seq_time']:.4f} s` (`{ref['pixels'] / ref['seq_time'] / 1e7:.2f} × 10⁷ px/s`)",
+            f"- OpenMP `-t {t_min}`: `{ref['omp_times'][t_min]:.4f} s` (`{tp_min:.2f} × 10⁷ px/s`) → `-t {t_max}`: `{ref['omp_times'][t_max]:.4f} s` (`{tp_max:.2f} × 10⁷ px/s`, tăng tốc `{sp_ref:.2f}×`)",
         ]
 
     out_md.write_text("\n".join(lines) + "\n", encoding="utf-8")
