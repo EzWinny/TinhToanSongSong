@@ -16,7 +16,7 @@
 
 - Chạy XeLaTeX **từ bên trong** `Report/`:
   `xelatex -interaction=nonstopmode main.tex`
-- **Chạy 2 lần.** Lần đầu luôn báo `Citation ... undefined` / `Reference ... undefined` và số trang sai — bỏ qua, chỉ kiểm tra lần hai. Dùng `pdflatex` sẽ lỗi (cần `fontspec`, Times New Roman, babel tiếng Việt).
+- **Chạy 2–3 lần (đến khi số trang Mục lục ổn định).** Lần đầu luôn báo `Citation ... undefined` / `Reference ... undefined` và số trang sai — bỏ qua, chỉ kiểm tra lần cuối. Dùng `pdflatex` sẽ lỗi (cần `fontspec`, Times New Roman, babel tiếng Việt).
 - Model không đọc trực tiếp được file PDF ở môi trường này. Để kiểm tra PDF dùng Python `pymupdf` (`len(doc)`, `page.get_text()`), không dùng công cụ Read.
 
 ## Demo
@@ -30,11 +30,11 @@
 
 ## Quy ước báo cáo
 
-- Viết tiếng Việt. Mọi `\bibitem` trong `sections/08-tai-lieu.tex` phải có `\cite` tương ứng (hiện 17 nguồn).
+- Viết tiếng Việt. Mọi `\bibitem` trong `sections/08-tai-lieu.tex` phải có `\cite` tương ứng (hiện 20 nguồn).
 - Bảng giải trình tài liệu và kết quả tra cứu bài mới nằm ở `Report/docs/` (`giai-trinh-tai-lieu.md`, `nghien-cuu-bai-moi-hon.md`). Đọc trước khi đổi tên tác giả, danh sách tài liệu tham khảo hoặc mục 2.7.
 - File sinh ra (`*.aux`, `*.log`, `*.toc`, `*.lof`, `*.lot`, `*.out`, `*.exe`, `*.pgm`, `results.txt`, `speedup.png`) đã được ignore — không commit.
 
 ## Git
 
-- Remote `origin` = github.com/EzWinny/TinhToanSongSong. Branch hiện tại `report-update` (đổi tên từ `slide-update`); tag `checkpoint-before-fixes` đánh dấu trạng thái trước đợt sửa báo cáo.
+- Remote `origin` = github.com/EzWinny/TinhToanSongSong. Branch hiện tại `main` (đã merge `report-update`); tag `checkpoint-before-fixes` đánh dấu trạng thái trước đợt sửa báo cáo.
 - Nhắc lại: mọi commit/push đều phải hỏi trước (xem Hard rule).

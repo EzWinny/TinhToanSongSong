@@ -1,6 +1,6 @@
 # Giải trình tài liệu tham khảo
 
-Danh sách tài liệu tham khảo đã được rút gọn từ **31 xuống 17 nguồn**. Tất cả 17 nguồn còn lại đều được trích dẫn (`\cite`) trong báo cáo — không còn nguồn "để đó cho đủ số".
+Danh sách tài liệu tham khảo ban đầu đã được rút gọn từ **31 xuống 17 nguồn**, sau đó bổ sung **3 công trình độc lập năm 2026** cho Mục 2.7 (tổng cộng **20 nguồn**). Tất cả 20 nguồn đều được trích dẫn (`\cite`) trong báo cáo — không có nguồn "để đó cho đủ số".
 
 ## 1. Nguồn trực tiếp của báo cáo
 
@@ -36,7 +36,17 @@ Tất cả được trích dẫn trong **Phần 2.6 "Công trình liên quan"**,
 | Touvron et al. (2023) | LLaMA: mô hình nền tảng mở | Phần 1.3 (khi nêu các mô hình đánh giá) |
 | Boehm (1984) | Mô hình ước lượng chi phí COCOMO | Phần 3.5.2 |
 
-## 4. Các nguồn đã bỏ (14 nguồn)
+## 4. Công trình cập nhật cuối năm 2026 (nhóm 3 nguồn — Mục 2.7 & 6.3.3)
+
+Được chọn lọc và kiểm chứng từ `Report/docs/nghien-cuu-bai-moi-hon.md` để bổ sung bối cảnh mô hình mới (kể cả trọng số mở chạy local và tính tái lập không cần khóa API):
+
+| Nguồn | Phạm vi công trình | Lý do đưa vào |
+|---|---|---|
+| Bantel et al. (11/2026, `arXiv:2611.19105`) | 5 mô hình trọng số mở chạy local theo quy trình agentic trên 7 kernel × 4 khung task-based (OpenMP Tasking, HPX, StarPU, TTG), đo strong scaling tới 64 luồng | Bổ sung bằng chứng mới nhất về open-weight local và xác nhận cảnh báo "đúng chức năng chưa chắc song song thật" |
+| Cui et al. — HPC-Bench (11/2026, `arXiv:2611.02752`, NeurIPS 2026) | 114 workload / 16 motif HPC (tuần tự, OpenMP, CUDA), chỉ số `Fast@k` / `Speedup@k`, phát hành sẵn toàn bộ candidate | Trả lời trực tiếp bài toán tái lập không cần API và minh họa phương pháp đo phân phối đa bài toán |
+| Nogueira et al. (ERAD-RS 2026, DOI `10.5753/eradrs.2026.20521`) | 5 kernel PolyBench/C với GCC 13.3 `-O3 -fopenmp` (64 luồng), so sánh open-weight (Qwen, Codestral, CodeLlama...) vs đóng vs thủ công vs PoLLy | Gần toolchain GCC + OpenMP của báo cáo nhất, có bảng tăng tốc cụ thể giữa các họ mô hình |
+
+## 5. Các nguồn đã bỏ (14 nguồn)
 
 Đây là phần lớn danh sách gốc của bài báo, nhưng **không được trích dẫn ở bất kỳ đâu** trong báo cáo nên đã loại bỏ:
 

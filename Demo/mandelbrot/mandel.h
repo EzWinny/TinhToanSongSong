@@ -1,4 +1,5 @@
 #pragma once
+#include <algorithm>
 #include <cstdint>
 #include <fstream>
 #include <string>
@@ -31,6 +32,10 @@ inline Config parse_args(int argc, char** argv) {
         else if (a == "-b") c.chunk = std::stoi(v);
     }
     if (c.threads < 1) c.threads = 1;
+    if (c.width < 1) c.width = 1;
+    if (c.height < 1) c.height = 1;
+    if (c.max_iter < 1) c.max_iter = 1;
+    if (c.chunk < 0) c.chunk = 0;
     return c;
 }
 
@@ -48,10 +53,11 @@ inline int escape(double cr, double ci, int max_iter) {
 
 // Cùng một hàm tính cho cả bản tuần tự và bản OpenMP -> ảnh kết quả giống hệt.
 inline void render_rows(std::vector<uint8_t>& img, const Config& c, int y0, int y1) {
+    double step = c.scale / std::min(c.width, c.height);
     for (int y = y0; y < y1; ++y) {
-        double ci = (y - c.height / 2.0) * (c.scale / c.height);
+        double ci = (y - c.height / 2.0) * step;
         for (int x = 0; x < c.width; ++x) {
-            double cr = c.center + (x - c.width / 2.0) * (c.scale / c.width);
+            double cr = c.center + (x - c.width / 2.0) * step;
             img[(size_t)y * c.width + x] =
                 (uint8_t)(255.0 * escape(cr, ci, c.max_iter) / c.max_iter);
         }

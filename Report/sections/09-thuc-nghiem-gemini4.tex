@@ -1,0 +1,118 @@
+\subsection{Thử nghiệm kiểm chứng bổ sung trên mô hình mới (Gemini 4 Hydrogen)}\label{subsec:gemini4}
+
+Để bổ sung góc nhìn thực nghiệm cho thế hệ mô hình cuối năm 2026 như định hướng
+nêu tại Mục~\ref{subsec:mo-hinh-hien-nay}, nhóm thực hiện một đợt kiểm chứng độc
+lập trên mô hình \textbf{Gemini 4 Hydrogen} (mức suy luận \emph{Effort: High},
+sinh ngày 26/11/2026). Quy trình tuân thủ đúng thiết kế của bài báo gốc
+\cite{diehl2026}: gửi nguyên văn năm biến thể prompt P1, P2 và P3 (Phần~\ref{sec:phuongphap})
+trong năm phiên hội thoại trống độc lập, lấy \emph{mã nguồn lần sinh đầu tiên}
+(chưa qua chỉnh sửa) để biên dịch, kiểm tra ảnh và đo mở rộng tự động bằng bộ công
+cụ \code{Demo/eval\_llm.py}.
+
+\subsubsection{Môi trường kiểm thử cục bộ và giới hạn so sánh}
+
+Thử nghiệm được chạy trên máy trạm cục bộ: Windows 11, CPU 12 luồng logic, trình
+biên dịch MinGW-W64 GCC 13.2.0 (\code{x86\_64-ucrt-posix-seh}), cờ tối ưu
+\code{-O2 -Wall -Wextra} (kèm \code{-std=c++17} cho bất đồng bộ/thuật toán song
+song/OpenMP, \code{-std=c++20} cho coroutine và \code{-fopenmp} cho OpenMP). Mỗi
+cấu hình số luồng \code{-t} $\in\{1,2,4,8,12\}$ được đo lặp ba lần lấy trung bình;
+mốc tham chiếu cục bộ là chương trình \code{Demo/mandelbrot/mandel\_omp.cpp} (ảnh
+$1920\times1080$, 1000 vòng lặp). Do máy cục bộ không cài sẵn Intel TBB và MPI,
+biến thể C++17 thuật toán song song chỉ chạy được ở nhánh dự phòng tuần tự của
+\code{libstdc++}, còn biến thể MPI+OpenMP chỉ được kiểm duyệt tĩnh theo danh mục
+kiểm tra Bảng~\ref{tab:checklist}. Vì khác biệt phần cứng và toolchain so với cụm
+Linux \code{rostam} (20 lõi, GCC 11.5.0, TBB 2022.2, OpenMPI 5.0.7), các con số
+dưới đây được trình bày tách biệt và \emph{không} gộp vào Bảng~\ref{tab:success}
+hay Bảng~\ref{tab:detail}.
+
+\subsubsection{Kết quả biên dịch, thực thi và kiểm tra ảnh}
+
+Bảng~\ref{tab:gemini4} tổng hợp kết quả đánh giá trên năm tệp mã nguyên bản trong
+thư mục \code{Demo/llm\_eval/gemini/raw/}. Điểm nổi bật nhất là \emph{không có biến thể
+nào cần sửa mã} ở các phần chạy được trên máy cục bộ: cả bốn biến thể bộ nhớ chia
+sẻ biên dịch sạch với \code{-Wall -Wextra} (0 lỗi, 0 cảnh báo) và xuất ảnh P4 hợp
+lệ ngay từ lần sinh đầu tiên (Hình~\ref{fig:gemini4mandel}).
+
+\begin{table}[H]
+\centering
+\small
+\caption{Kết quả kiểm chứng bổ sung trên mã nguyên bản (lần sinh đầu) của Gemini 4
+Hydrogen (Effort: High) tại môi trường cục bộ (GCC 13.2.0, 12 luồng).}
+\label{tab:gemini4}
+\begin{tabularx}{\textwidth}{@{}l r c c c c >{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Biến thể} & \textbf{LOC} & \textbf{Build} & \textbf{Run} & \textbf{Ảnh P4} & \textbf{Speedup} & \textbf{Đặc điểm kỹ thuật chính} \\
+\midrule
+C++11 async & 133 & \checkmark\ (0) & \checkmark & \checkmark & \textbf{10,16$\times$} & \code{launch::async} + hàng đợi động \code{std::atomic<int>}; giữ tỉ lệ khung hình \\
+C++17 par\_algo & 163 & \checkmark\ (0)$^*$ & \checkmark$^*$ & \checkmark & 1,02$\times^*$ & Kiểm tra \code{\_\_has\_include} với \code{tbb/global\_control.h}, in cảnh báo khi thiếu TBB; cắt tỉa hình tim + bóng chu kỳ 2 \\
+C++20 coroutine & 205 & \checkmark\ (0) & \checkmark & \checkmark & \textbf{10,11$\times$} & Tự xây \code{ThreadPool} (\code{std::jthread}) + \code{co\_await} + \code{std::latch}; không thăm dò \code{done()} \\
+OpenMP & 100 & \checkmark\ (0) & \checkmark & \checkmark & \textbf{9,53$\times$} & \code{schedule(dynamic, 1)}, tôn trọng \code{-t}; ảnh mặc định $2048\times2048$ (thiếu \code{<algorithm>} tường minh cho \code{std::fill}) \\
+MPI+OpenMP & 199 & -- & -- & -- & -- & Kiểm duyệt tĩnh đạt: \code{MPI\_THREAD\_FUNNELED}, chia \term{block-cyclic} theo \code{-p}, \code{MPI\_Gatherv}, timer đặt sau gather \\
+\bottomrule
+\end{tabularx}
+\par\vspace{4pt}
+{\footnotesize\raggedright
+Ghi chú: LOC là số dòng không trống; số trong ngoặc ở cột Build là số cảnh báo của
+\code{-Wall -Wextra}. $^*$ Trên máy không có Intel TBB, \code{par\_algo.cpp} vẫn
+biên dịch sạch nhưng chạy tuần tự và tự in cảnh báo \code{-t may be ignored}; thời
+gian đơn luồng chỉ 71,2~ms nhờ cắt tỉa toán học.\par}
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.92\textwidth]{figures/fig_gemini4_mandelbrot.png}
+  \caption{Ảnh đầu ra định dạng P4 (chuyển sang PNG để hiển thị) do bốn biến thể
+  bộ nhớ chia sẻ của Gemini 4 Hydrogen sinh ngay ở lần đầu: cả bốn đều đúng tỉ lệ
+  hình học, rõ biên fractal và không gặp lỗi ảnh đen P4/P5.}
+  \label{fig:gemini4mandel}
+\end{figure}
+
+\subsubsection{Khả năng mở rộng và hàm ý rút ra}
+
+Hình~\ref{fig:gemini4scaling} so sánh đường tăng tốc và thời gian tính (loại trừ
+I/O) của ba biến thể chạy đa luồng với mốc tham chiếu cục bộ \code{mandel\_omp.cpp}
+($0{,}413\text{ s}\to 0{,}040\text{ s}$, tăng tốc $10{,}28\times$). Trên 12 luồng
+logic, cả ba biến thể của Gemini 4 Hydrogen đều tôn trọng tham số \code{-t} và mở
+rộng bám sát mốc tham chiếu: C++11 bất đồng bộ đạt $10{,}16\times$ ($1{,}311\text{ s}
+\to 0{,}129\text{ s}$), C++20 coroutine đạt $10{,}11\times$ ($1{,}144\text{ s}\to
+0{,}113\text{ s}$) và OpenMP đạt $9{,}53\times$ ($1{,}492\text{ s}\to 0{,}157\text{ s}$).
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.98\textwidth]{figures/fig_gemini4_scaling.png}
+  \caption{Khả năng mở rộng của mã nguyên bản do Gemini 4 Hydrogen sinh trên 12
+  luồng cục bộ (trung bình 3 lần đo, loại trừ I/O) so với mốc tham chiếu
+  \code{mandel\_omp.cpp}.}
+  \label{fig:gemini4scaling}
+\end{figure}
+
+\newpage
+
+Ba nhận xét kỹ thuật rút ra từ thử nghiệm bổ sung này:
+
+\begin{enumerate}
+  \item \textbf{Khắc phục rõ rệt các lỗi cốt lõi của thế hệ trước.} Biến thể
+        C++20 coroutine dùng \code{std::jthread} (đặt cuối danh sách thành viên để
+        đảm bảo thứ tự hủy an toàn) kết hợp \code{std::latch}, tránh hoàn toàn lỗi
+        treo vòng lặp \code{done()} của Claude và lỗi giải phóng hai lần của LLaMA.
+        Biến thể C++17 kiểm tra sự tồn tại của \code{<tbb/global\_control.h>} bằng
+        \code{\_\_has\_include} và cảnh báo tường minh khi thiếu backend thay vì
+        đặt sai \code{OPENMP\_NUM\_THREADS}. Biến thể MPI+OpenMP chủ động dùng
+        \code{MPI\_THREAD\_FUNNELED}, phân vùng \term{block-cyclic} theo \code{-p}
+        (giảm rủi ro mất cân bằng tải ở bước $2\to 4$ nút) và gom dữ liệu bằng
+        \code{MPI\_Gatherv} trước khi dừng \code{MPI\_Wtime()}.
+  \item \textbf{Vẫn còn chi tiết nhỏ cần kiểm duyệt.} Ở \code{openmp.cpp}, mã gọi
+        \code{std::fill} nhưng thiếu \code{\#include <algorithm>} tường minh (chỉ
+        vượt qua trên GCC 13.2 nhờ kéo gián tiếp qua header chuẩn khác và có thể
+        gặp lỗi trên trình biên dịch chặt hơn); đồng thời cờ cấu hình số vòng lặp
+        không đồng nhất giữa các biến thể (\code{-i} ở \code{async}/\code{coroutine},
+        \code{-m} ở \code{openmp}).
+  \item \textbf{Độ nhạy của thời gian tuyệt đối với đặc tả prompt.} Dù cùng
+        $1920\times1080$ và 1000 vòng lặp, thời gian đơn luồng của \code{async.cpp}
+        ($1{,}311\text{ s}$) lớn hơn mốc tham chiếu ($0{,}413\text{ s}$) do miền
+        tọa độ phức mặc định phóng sát hơn vào ruột tập Mandelbrot (tỉ lệ điểm chạm
+        $I_{\max}$ cao hơn), trong khi \code{par\_algo.cpp} chỉ mất $71{,}2\text{ ms}$
+        nhờ tự thêm phép cắt tỉa hình tim và bóng chu kỳ 2. Điều này củng cố khuyến
+        nghị ở Phần~\ref{sec:ketluan}: nếu muốn so sánh hiệu năng tuyệt đối giữa các
+        LLM, prompt cần cố định độ phân giải, miền tọa độ phức và tiêu chí tối ưu.
+\end{enumerate}

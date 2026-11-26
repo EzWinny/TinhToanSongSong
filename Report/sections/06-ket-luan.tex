@@ -1,6 +1,6 @@
 \phant{KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN}\label{sec:ketluan}
 
-\subsection{Kết luận}
+\subsection{Tổng kết các kết quả chính}
 
 Nghiên cứu của Diehl, Nader và Gupta đánh giá bốn LLM hàng đầu trên năm biến thể
 lập trình song song cho bài toán Mandelbrot. Kết quả cho thấy một bức tranh vừa
@@ -11,12 +11,13 @@ lạc quan vừa thận trọng.
 chạy và mở rộng được. ChatGPT-5 đạt 100\% ở cả ba tiêu chí biên dịch, thực thi và
 tính đúng — một kết quả đáng chú ý với một bài toán đa mô hình lập trình. Trong
 một số trường hợp, mã LLM còn vượt mã con người: bất đồng bộ của ChatGPT-4 và
-OpenMP của ChatGPT-5.
+OpenMP của ChatGPT-5 (theo phần văn bản bài báo gốc; xem lưu ý đối chiếu đồ thị
+tại Phần~\ref{sec:ketqua}).
 
 Ở mặt hạn chế, khoảng cách giữa “biên dịch được” và “chạy đúng” rất lớn với các
-mô hình yếu. ChatGPT-4 biên dịch 100\% nhưng chỉ 20\% chương trình được tính là
-chạy không lỗi; Claude đạt 40\%; LLaMA 0\%. Các lỗi tập trung ở ba nhóm: kiểm
-soát số luồng (nhầm OpenMP với TBB), vòng đời coroutine (\code{final\_suspend},
+mô hình yếu. ChatGPT-4 biên dịch 100\% nhưng chỉ 20\% (1/5) chương trình chạy
+không lỗi; Claude đạt 40\% theo Bảng~III gốc (3/5 = 60\% theo Bảng~I--II); LLaMA
+đạt 0\% theo các bảng tổng hợp. Các lỗi tập trung ở ba nhóm: kiểm soát số luồng (nhầm OpenMP với TBB), vòng đời coroutine (\code{final\_suspend},
 \code{promise\_type}, giải phóng hai lần) và định dạng đầu ra (P4/P5). Đây đều là
 lỗi ngữ nghĩa hoặc lỗi hệ sinh thái, không phải lỗi cú pháp.
 
@@ -81,11 +82,14 @@ nghiệm với nhiều cách diễn đạt prompt, nhiệt độ khác nhau. Đ�
 chuyển từ nghiên cứu tình huống sang đánh giá có thể khái quát hóa.
 
 Cách bổ sung cụ thể (chọn mô hình, giữ nguyên prompt/toolchain, lặp lại phép đo và
-đối chiếu với nghiên cứu dùng phương pháp khác) đã được trình bày tại
-Mục~\ref{subsec:mo-hinh-hien-nay}. Một giả thuyết đáng kiểm chứng là các mô hình
-mới khắc phục được phần lớn lỗi cú pháp nhưng vẫn yếu ở khả năng mở rộng; đây chỉ
-là giả thuyết, không phải kết luận, vì chưa có phép đo nào trong nghiên cứu này
-xác nhận.
+đối chiếu với nghiên cứu dùng phương pháp khác) cùng bối cảnh từ ba công trình độc
+lập cuối năm 2026 \cite{bantel2026agentic,cui2026hpcbench,nogueira2026openmp} đã
+được trình bày tại Mục~\ref{subsec:mo-hinh-hien-nay}. Các kết quả độc lập này bước
+đầu cho thấy thế hệ mô hình mới (kể cả trọng số mở) cải thiện rõ tính đúng và tăng
+tốc trên OpenMP/tasking, nhưng vẫn gặp giới hạn khi bị tuần tự hóa ngầm hoặc siết
+chặt ngưỡng speedup; để kiểm chứng trên cùng thước đo với coroutine C++20 và
+MPI+OpenMP, vẫn cần chạy thực nghiệm trực tiếp với bộ prompt P1/P2/P3 của bài toán
+Mandelbrot.
 
 \subsubsection{Mở rộng tiêu chí}
 
@@ -95,7 +99,7 @@ những công cụ nào trong quy trình phát triển. Cuối cùng, cần xây
 đánh giá mã song song do AI sinh, bao gồm tính đúng, khả năng mở rộng, tính tái
 lập và chi phí bảo trì — chứ không chỉ dừng ở tỉ lệ biên dịch.
 
-\subsection{Kết luận cuối}
+\subsection{Nhận định chung}
 
 Bài báo đặt nền móng cho một hướng nghiên cứu còn non trẻ: đánh giá LLM trong bối
 cảnh HPC thực thụ. Giá trị lớn nhất của nó không nằm ở việc tuyên bố mô hình nào

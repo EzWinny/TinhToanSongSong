@@ -27,25 +27,30 @@ Bảng II trong bài báo. Ký hiệu \checkmark{} là không có lỗi, $\times
 \multirow{3}{*}{Thuật toán song song}
  & Build       & \checkmark & \checkmark & \checkmark & $\times$ \\
  & Runtime     & \checkmark & $\times$   & $\times$   & $\times$ \\
- & Correctness & \checkmark & \checkmark & \checkmark & $\times$ \\
+ & Correctness & \checkmark & \checkmark & \checkmark & \checkmark \\
 \midrule
 \multirow{3}{*}{OpenMP}
  & Build       & \checkmark & \checkmark & \checkmark & \checkmark \\
  & Runtime     & \checkmark & $\times$   & \checkmark & $\times$ \\
- & Correctness & \checkmark & \checkmark & \checkmark & $\times$ \\
+ & Correctness & \checkmark & \checkmark & \checkmark & \checkmark \\
 \midrule
 \multirow{3}{*}{MPI+OpenMP}
- & Build       & \checkmark & \checkmark & \checkmark & $\times$ \\
+ & Build       & \checkmark & \checkmark & \checkmark & \checkmark \\
  & Runtime     & \checkmark & \checkmark & \checkmark & $\times$ \\
- & Correctness & \checkmark & \checkmark & \checkmark & $\times$ \\
+ & Correctness & \checkmark & \checkmark & \checkmark & \checkmark \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 Bảng~\ref{tab:detail} cho thấy rõ hơn Bảng~\ref{tab:success}: ChatGPT-4 thất bại
-ở tầng thực thi cho cả bốn biến thể bộ nhớ chia sẻ, dù không có lỗi biên dịch;
-Claude chỉ thất bại ở coroutine và thuật toán song song; LLaMA thất bại ở mọi
-tiêu chí ngoài hai lần biên dịch thành công (bất đồng bộ và OpenMP).
+ở tầng thực thi cho cả bốn biến thể bộ nhớ chia sẻ (đạt 1/5 = 20\%, duy nhất
+MPI+OpenMP), dù không có lỗi biên dịch; Claude chỉ thất bại ở tầng thực thi của
+coroutine và thuật toán song song (đạt 3/5 = 60\%, trong khi Bảng~III gốc ghi
+40\%); LLaMA biên dịch thành công 3/5 biến thể (60\%: bất đồng bộ, OpenMP và
+MPI+OpenMP) và đạt tính đúng sau khi sửa ở 3/5 biến thể (60\%: thuật toán song
+song, OpenMP và MPI+OpenMP — cả hai đều ghi 40\% ở Bảng~III gốc), nhưng thất bại
+ở tầng thực thi cho cả năm biến thể (0/5 = 0\%). Xem mục đối chiếu chi tiết tại
+Phần~\ref{sec:ketqua}.
 
 \clearpage
 \section*{PHỤ LỤC B. KHUNG MPI+OPENMP THAM CHIẾU}
@@ -62,16 +67,17 @@ int rank, size;
 MPI_Init(&argc, &argv);
 MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 MPI_Comm_size(MPI_COMM_WORLD, &size);
-
 int base = height / size;
 int local_h = base + (rank < height % size ? 1 : 0);
 int y0 = rank * base + std::min(rank, height % size);
-std::vector<unsigned char> local(local_h * width);
+std::vector<unsigned char> local((size_t)local_h * width);
 
+MPI_Barrier(MPI_COMM_WORLD);
+double t_start = MPI_Wtime();     // bat dau do sau khi dong bo
 #pragma omp parallel for schedule(dynamic)
 for (int y = 0; y < local_h; ++y)
     for (int x = 0; x < width; ++x)
-        local[y*width + x] = escape_pixel(x, y0 + y);
+        local[(size_t)y * width + x] = escape_pixel(x, y0 + y);
 
 std::vector<int> counts(size), displs(size);
 for (int r = 0; r < size; ++r) {
@@ -79,23 +85,26 @@ for (int r = 0; r < size; ++r) {
     counts[r] = h * width;
     displs[r] = (r * base + std::min(r, height % size)) * width;
 }
-
 std::vector<unsigned char> image;
-if (rank == 0) image.resize(width * height);
+if (rank == 0) image.resize((size_t)width * height);
 MPI_Gatherv(local.data(), (int)local.size(), MPI_UNSIGNED_CHAR,
             image.data(), counts.data(), displs.data(),
             MPI_UNSIGNED_CHAR, 0, MPI_COMM_WORLD);
 
-double t_end = MPI_Wtime();       // do sau khi gather
-if (rank == 0) write_pgm("mandel.pgm", image, width, height);
+double t_end = MPI_Wtime();       // ket thuc do sau khi gather (loai I/O)
+if (rank == 0) {
+    std::cout << "Compute + gather: " << (t_end - t_start) << " s\n";
+    write_pgm("mandel.pgm", image, width, height);
+}
 MPI_Finalize();
 \end{lstlisting}
 
 \clearpage
-\section*{PHỤ LỤC C. CÂU HỎI THẢO LUẬN}
-\addcontentsline{toc}{section}{PHỤ LỤC C. CÂU HỎI THẢO LUẬN}
+\section*{PHỤ LỤC C. CÂU HỎI VẤN ĐÁP VÀ PHẢN BIỆN}
+\addcontentsline{toc}{section}{PHỤ LỤC C. CÂU HỎI VẤN ĐÁP VÀ PHẢN BIỆN}
 
-Các câu hỏi dưới đây có thể dùng để thảo luận nhóm hoặc kiểm tra mức hiểu bài.
+Các câu hỏi dưới đây tổng hợp các vấn đề kỹ thuật cốt lõi nhằm phục vụ trao đổi
+học thuật và vấn đáp bảo vệ đề tài.
 
 \begin{enumerate}
   \item Vì sao một chương trình có thể biên dịch 100\% nhưng chỉ 20\% chạy không

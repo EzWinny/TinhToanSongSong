@@ -1,10 +1,15 @@
+import io
+from pathlib import Path
 import re
 import sys
 
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-path = sys.argv[1] if len(sys.argv) > 1 else "mandelbrot/results.txt"
-text = open(path, encoding="utf-8").read()
+HERE = Path(__file__).resolve().parent
+path = Path(sys.argv[1]) if len(sys.argv) > 1 else HERE / "mandelbrot/results.txt"
+text = path.read_text(encoding="utf-8")
 
 base = None
 threads, speedups = [], []
@@ -26,6 +31,22 @@ plt.ylabel("Speedup")
 plt.title("Mandelbrot: speedup theo so luong")
 plt.legend()
 plt.grid(True)
-out = "speedup.png"
-plt.savefig(out, dpi=150)
+buf = io.BytesIO()
+plt.savefig(buf, dpi=150, format="png")
+plt.close()
+out = HERE / "speedup.png"
+try:
+    out.write_bytes(buf.getvalue())
+except OSError:
+    for idx in range(1, 100):
+        alt = HERE / f"speedup_{idx}.png"
+        try:
+            alt.write_bytes(buf.getvalue())
+            print(f"(Luu y: speedup.png dang mo trong ung dung khac, da luu sang {alt.name})")
+            out = alt
+            break
+        except OSError:
+            continue
+    else:
+        raise
 print(f"Da luu {out} (thoi gian tuan tu = {base:.4f} s)")

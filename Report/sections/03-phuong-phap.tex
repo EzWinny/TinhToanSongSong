@@ -156,20 +156,25 @@ công cụ \code{scc}. Công thức cơ bản của COCOMO:
 \begin{equation}
   \text{Effort} = a \cdot (\text{KLOC})^{b},
 \end{equation}
-với $a,b$ phụ thuộc loại dự án. COCOMO được thiết kế cho phần mềm tuần tự, không
-mô hình hóa chi phí đồng bộ, truyền thông hay gỡ lỗi song song. Vì vậy con số
-COCOMO chỉ nên đọc như một thước đo tương đối giữa các chương trình cùng loại,
-không phải dự báo tuyệt đối.
+trong đó $\text{KLOC}$ là kích thước mã tính theo nghìn dòng lệnh, $\text{Effort}$
+là công sức phát triển tính theo người--tháng (\term{person-months}), còn $a,b$ là
+các hệ số thực nghiệm phụ thuộc loại dự án. COCOMO được thiết kế cho phần mềm tuần
+tự, không mô hình hóa chi phí đồng bộ, truyền thông hay gỡ lỗi song song. Vì vậy
+con số COCOMO chỉ nên đọc như một thước đo tương đối giữa các chương trình cùng
+loại, không phải dự báo tuyệt đối.
 
 \subsubsection{Thông lượng và tăng tốc}
 
 Thông lượng được đo bằng số cập nhật điểm ảnh mỗi giây
-(\term{pixel updates per second}). Với ảnh $W\times H$ và $I_{\max}$ vòng lặp,
-một cách hiểu thận trọng là đại lượng tỉ lệ nghịch với thời gian tính toán của
-cùng một khối lượng công việc:
+(\term{pixel updates per second}). Với ảnh kích thước $W\times H$, thông lượng
+điểm ảnh được tính theo
 \begin{equation}
-  \text{Throughput} \;\propto\; \frac{W\cdot H\cdot I_{\max}}{T_{\text{compute}}}.
+  \text{Throughput} = \frac{W\cdot H}{T_{\text{compute}}},
 \end{equation}
+(nếu tính theo tổng số phép lặp thoát thực tế thì tử số là
+$\sum_{x,y} n(x,y) \le W\cdot H\cdot I_{\max}$; do mọi chương trình đánh giá trên
+cùng miền ảnh và $I_{\max}$, đại lượng này tỉ lệ nghịch trực tiếp với
+$T_{\text{compute}}$).
 Khi so sánh các đường cong, cần chú ý cả \emph{độ dốc} (khả năng mở rộng) lẫn
 \emph{độ cao tuyệt đối} (hiệu năng nền). Một đường phẳng nằm cao có thể là dấu
 hiệu chương trình luôn dùng toàn bộ lõi, không phải dấu hiệu mở rộng tốt.
@@ -195,7 +200,7 @@ Bộ nhớ & 92 GB/nút \\
 Trình biên dịch & GCC 11.5.0 \\
 MPI & OpenMPI 5.0.7 \\
 Backend cho C++17 & Intel TBB 2022.2 \\
-Ảnh bộ nhớ chia sẻ & $1920\times1080$ điểm ảnh, 1000 vòng lặp \\
+Ảnh bộ nhớ chia sẻ & $1920\times1080$ điểm ảnh (mặc định; phóng lớn hơn khi đo mở rộng, bài báo không nêu kích thước mới), 1000 vòng lặp \\
 Ảnh phân tán & $12000\times80000$ điểm ảnh, 1000 vòng lặp \\
 Cấu hình đo phân tán & 1, 2, 4, 8, 12 nút; 1 rank MPI/nút; 20 lõi/nút \\
 Công cụ đo mã & \code{cloc}, \code{scc} \\
@@ -205,7 +210,7 @@ Công cụ đo mã & \code{cloc}, \code{scc} \\
 
 Việc dùng một cấu hình duy nhất giúp so sánh công bằng nhưng giới hạn khả năng
 ngoại suy. Kết quả có thể khác trên Clang, trên OpenMP thật (không qua TBB), trên
-GPU hoặc trên kiến trúc many-core. Phần~\ref{sec:thaoluan} thảo luận các mối đe
+GPU hoặc trên kiến trúc many-core. Phần~\ref{sec:thaoluan} phân tích các mối đe
 dọa này.
 
 \subsection{Tính tái lập và kiểm soát chất lượng}

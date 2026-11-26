@@ -16,12 +16,14 @@ thoát thực dụng là $|z_n|>R$ với bán kính thoát $R=2$. Trong thực h
 lặp bị chặn trên bởi $I_{\max}$; điểm nào không thoát sau $I_{\max}$ vòng được coi
 là thuộc tập (hoặc nằm sát tập) và thường được tô màu đen.
 
-Với mỗi điểm ảnh, tọa độ phức được ánh xạ tuyến tính từ chỉ số điểm ảnh:
+Với mỗi điểm ảnh $(x,y)$ trên lưới $W\times H$, tọa độ phức được ánh xạ tuyến
+tính với bước lưới đẳng hướng $\Delta = s/\min(W,H)$ để giữ nguyên tỉ lệ hình
+học (tránh bị kéo giãn khi $W\neq H$):
 \begin{equation}
-  c = \bigl(c_{\mathrm{real}} + (x - W/2)\,s/W\bigr)
-      + i\bigl(c_{\mathrm{imag}} + (y - H/2)\,s/H\bigr),
+  c = \bigl(c_{\mathrm{real}} + (x - W/2)\,\Delta\bigr)
+      + i\bigl(c_{\mathrm{imag}} + (y - H/2)\,\Delta\bigr),
 \end{equation}
-trong đó $W,H$ là kích thước ảnh, $s$ là tỉ lệ khung nhìn, và
+trong đó $s$ là độ rộng khung nhìn theo cạnh ngắn hơn của ảnh, và
 $(c_{\mathrm{real}},c_{\mathrm{imag}})$ là tâm. Cấu hình mặc định của bài báo là
 $I_{\max}=1000$, $c=-0{,}75+0i$, $s=3{,}0$ và ảnh $1920\times1080$ điểm ảnh
 \cite{diehl2026}. Hình~\ref{fig:mandel} minh họa kết quả do hai chương trình
@@ -45,8 +47,8 @@ khác nhau sinh ra.
   \label{fig:mandel}
 \end{figure}
 
+\noindent\begin{minipage}{\linewidth}
 Mã giả của phép tính một điểm ảnh như sau:
-
 \begin{lstlisting}[language=C++,caption={Tính số vòng lặp thoát cho một điểm ảnh.},label={lst:escape},numbers=none]
 int escape(double cr, double ci, int max_iter) {
     double zr = 0.0, zi = 0.0;
@@ -60,6 +62,7 @@ int escape(double cr, double ci, int max_iter) {
     return n;
 }
 \end{lstlisting}
+\end{minipage}
 
 Độ phức tạp tuần tự là $\mathcal{O}(W\cdot H\cdot I_{\max})$ trong trường hợp xấu
 nhất. Trên thực tế, phần lớn điểm ảnh nằm ngoài tập thoát chỉ sau vài vòng lặp,
@@ -98,10 +101,12 @@ viện ngoài. Cần phân biệt chính xác các biến thể của họ Netpb
   \item \textbf{P4}: bitmap nhị phân, mỗi byte chứa 8 điểm ảnh đơn sắc.
   \item \textbf{P2}: ảnh xám ASCII, mỗi điểm ảnh là một số nguyên.
   \item \textbf{P5}: ảnh xám nhị phân, mỗi điểm ảnh là một byte (0--255).
+  \item \textbf{P3 / P6 (PPM)}: ảnh màu RGB dạng ASCII (P3) hoặc nhị phân (P6),
+        mỗi điểm ảnh gồm ba kênh màu (như ảnh màu xanh ở Hình~\ref{fig:mandel}b).
 \end{itemize}
 
-PBM đúng nghĩa chỉ gồm P1 và P4; P2/P5 thuộc PGM. Bài báo dùng cụm “PBM” theo
-nghĩa rộng của họ Netpbm. Sự nhập nhằng này không chỉ là vấn đề thuật ngữ: nó
+PBM đúng nghĩa chỉ gồm P1 và P4; P2/P5 thuộc PGM; P3/P6 thuộc PPM. Bài báo dùng
+cụm “PBM” theo nghĩa rộng của họ Netpbm. Sự nhập nhằng này không chỉ là vấn đề thuật ngữ: nó
 trực tiếp tạo ra một lớp lỗi quan sát được, khi mã tính màu theo thang 256 mức
 (P5) nhưng lại ghi header và dữ liệu theo định dạng 1 bit (P4), dẫn tới ảnh đen
 hoặc ảnh sai định dạng \cite{diehl2026}. Phần~\ref{sec:ketqua} phân tích lỗi này
@@ -140,12 +145,18 @@ for (int t = 0; t < nthreads; ++t)
 for (auto& f : tasks) f.get();   // cho tat ca hoan thanh
 \end{lstlisting}
 
-Ba đặc điểm cần lưu ý. Thứ nhất, \code{std::async} không bảo đảm mỗi tác vụ có
-một luồng riêng; nó có thể dùng thread pool hoặc trì hoãn (\code{launch::deferred}).
-Thứ hai, hủy một \code{std::future} từ \code{std::async} có thể chặn cho tới khi
-tác vụ kết thúc, nên vòng đời đối tượng quan trọng hơn tưởng tượng. Thứ ba, C++11
-không cung cấp API chuẩn để đặt số luồng toàn cục; việc điều khiển số luồng phụ
-thuộc hoàn toàn vào cách người lập trình chia tác vụ.
+Ba đặc điểm cần lưu ý. Thứ nhất, nếu không truyền tường minh cờ
+\code{std::launch::async}, chính sách mặc định là
+\code{launch::async | launch::deferred} nên runtime có quyền trì hoãn thực thi
+tới khi gọi \code{.get()} (chạy tuần tự); ngược lại, khi ép
+\code{std::launch::async} như Đoạn mã~\ref{lst:async}, GCC/libstdc++ thường tạo
+một luồng hệ điều hành mới cho mỗi tác vụ (khác với một số runtime dùng thread
+pool), nên cần chia việc theo \code{nthreads} thay vì sinh quá nhiều tác vụ nhỏ.
+Thứ hai, hàm hủy của \code{std::future} tạo bởi \code{std::async} sẽ chặn cho tới
+khi tác vụ kết thúc — nếu không lưu đối tượng \code{future} vào danh sách (để
+biến tạm bị hủy ngay cuối vòng lặp), toàn bộ lời gọi sẽ chạy tuần tự. Thứ ba,
+C++11 không cung cấp API chuẩn để đặt số luồng toàn cục; việc điều khiển số luồng
+phụ thuộc hoàn toàn vào cách người lập trình chia tác vụ.
 
 \subsubsection{C++17: thuật toán song song}
 
@@ -180,7 +191,11 @@ std::for_each(std::execution::par, pixels.begin(), pixels.end(),
 \subsubsection{C++20: coroutine}
 
 Coroutine C++20 là hàm có thể tạm dừng và tiếp tục tại các điểm xác định, không
-cần một ngăn xếp riêng cho mỗi lần dừng (\term{stackless}). Ngôn ngữ chỉ cung cấp
+cần một ngăn xếp riêng cho mỗi lần dừng (\term{stackless}). Cần nhấn mạnh rằng
+bản thân coroutine chỉ cung cấp cơ chế \emph{đồng thời hợp tác} (\term{cooperative
+concurrency}), không tự tạo luồng hay chạy song song trên nhiều lõi; muốn song
+song hóa bài toán tính toán như Mandelbrot, người lập trình phải kết hợp coroutine
+với một bộ lập lịch (scheduler) và nhóm luồng (thread pool). Ngôn ngữ chỉ cung cấp
 ba từ khóa \code{co\_await}, \code{co\_yield}, \code{co\_return}; phần còn lại do
 người lập trình định nghĩa: kiểu \code{task}, \code{promise\_type}, scheduler và
 cách quản lý vòng đời.
@@ -190,6 +205,8 @@ tạo ra một \term{coroutine frame} chứa tham số, biến cục bộ và tr
 dừng. Đối tượng \code{promise\_type} điều khiển hành vi:
 
 \begin{itemize}
+  \item \code{get\_return\_object()}: tạo đối tượng kiểu \code{task} trả về cho
+        bên gọi.
   \item \code{initial\_suspend()}: coroutine dừng ngay khi được gọi hay chạy luôn.
   \item \code{return\_void()} hoặc \code{return\_value(v)}: tương ứng với
         \code{co\_return;} hoặc \code{co\_return v;}.
@@ -198,12 +215,14 @@ dừng. Đối tượng \code{promise\_type} điều khiển hành vi:
   \item \code{unhandled\_exception()}: xử lý ngoại lệ thoát ra khỏi coroutine.
 \end{itemize}
 
-Hàm \code{std::coroutine\_handle<>::done()} chỉ trả về \code{true} khi coroutine
-đã dừng tại điểm \code{final\_suspend} và đang ở trạng thái treo. Nếu
-\code{final\_suspend()} trả về \code{std::suspend\_never}, coroutine tự hủy frame
-ngay khi kết thúc; trạng thái “đã xong” có thể không bao giờ quan sát được qua
-\code{done()}. Vòng lặp chờ trong Listing~\ref{lst:corobug} vì thế có thể chạy
-mãi.
+Hàm \code{std::coroutine\_handle<>::done()} chỉ hợp lệ khi coroutine đang ở trạng
+thái tạm dừng và trả về \code{true} khi coroutine đã dừng tại điểm
+\code{final\_suspend}. Nếu \code{final\_suspend()} trả về
+\code{std::suspend\_never}, coroutine tự hủy frame ngay khi kết thúc; mọi lời gọi
+\code{done()} sau đó truy cập vào handle đã bị hủy và gây \emph{hành vi không xác
+định} (undefined behavior) — trên thực tế vòng lặp chờ trong
+Đoạn mã~\ref{lst:corobug} có thể chạy mãi không dừng (đồng thời việc thăm dò
+\code{done()} từ luồng khác khi coroutine đang chạy cũng tạo tranh chấp dữ liệu).
 
 \begin{lstlisting}[language=C++,caption={Vòng lặp chờ \code{done()} không bao giờ kết thúc khi \code{final\_suspend} là \code{suspend\_never}.},label={lst:corobug}]
 while (!tasks[i].done()) {
@@ -293,17 +312,20 @@ các hàng thuộc khoảng
              \left\lfloor \frac{(r+1)H}{P}\right\rfloor\right),
 \end{equation}
 với $P$ là số tiến trình. Sau khi tính xong, mỗi tiến trình gửi phần ảnh của mình
-về tiến trình gốc (\code{root}) bằng \code{MPI\_Gather}; root ghép các mảnh thành
-ảnh đầy đủ và ghi ra tệp.
+về tiến trình gốc (\code{root}) bằng \code{MPI\_Gather} (khi $H$ chia hết cho $P$)
+hoặc \code{MPI\_Gatherv} (trong trường hợp tổng quát khi số hàng giữa các tiến
+trình có thể chênh nhau 1 hàng); root ghép các mảnh thành ảnh đầy đủ và ghi ra
+tệp.
 
 \subsubsection{MPI\_Gather và các lỗi biên}
 
 \code{MPI\_Gather} yêu cầu mọi tiến trình gửi đúng \code{sendcount} phần tử cùng
-kiểu dữ liệu, và root nhận đủ \code{sendcount} từ mỗi tiến trình. Nếu số phần tử
-gửi không khớp với vùng đệm nhận, hoặc kiểu dữ liệu không tương thích, chương
-trình có thể không báo lỗi ngay mà ghi đè bộ nhớ, dẫn tới \code{free(): invalid
-pointer} hoặc segmentation fault. Đây là lớp lỗi rất khó truy nguyên vì vị trí
-crash không trùng với vị trí sai.
+kiểu dữ liệu, và root nhận đúng \code{recvcount} (bằng \code{sendcount}) từ
+\emph{mỗi} tiến trình (không phải tổng số phần tử của toàn bộ tiến trình). Nếu số
+phần tử gửi không khớp với vùng đệm nhận, hoặc kiểu dữ liệu không tương thích,
+chương trình có thể không báo lỗi ngay mà ghi đè bộ nhớ, dẫn tới
+\code{free(): invalid pointer} hoặc segmentation fault. Đây là lớp lỗi rất khó
+truy nguyên vì vị trí crash không trùng với vị trí sai.
 
 Một lỗi khác liên quan đến đo đạc: nếu bộ đếm thời gian kết thúc được đặt trước
 \code{MPI\_Gather}, thời gian truyền thông bị loại khỏi phép đo. Khi đó chương
@@ -316,14 +338,19 @@ bằng \cite{diehl2026}.
 Mô hình lai dùng MPI giữa các nút và OpenMP trong mỗi nút: một rank MPI trên mỗi
 nút, mỗi rank chạy 20 luồng OpenMP trên 20 lõi. Cách này giảm số thông điệp so
 với việc dùng một rank cho mỗi lõi, nhưng đòi hỏi cân bằng tải giữa các nút và
-xử lý đúng vùng chia sẻ trong mỗi rank. Chi phí tổng quát:
+xử lý đúng vùng chia sẻ trong mỗi rank. Do mọi lời gọi truyền thông MPI chỉ thực
+hiện bởi luồng chính bên ngoài vùng \code{\#pragma omp parallel}, chương trình chỉ
+cần mức hỗ trợ đa luồng tối thiểu (\code{MPI\_THREAD\_FUNNELED}, hoặc khởi tạo
+bằng \code{MPI\_Init} thông thường) thay vì \code{MPI\_THREAD\_MULTIPLE}. Chi phí
+tổng quát:
 \begin{equation}
   T(P) = T_{\text{tính}}(P) + T_{\text{truyền thông}}(P) + T_{\text{I/O}},
 \end{equation}
-trong đó $T_{\text{truyền thông}}$ tăng theo số nút và kích thước dữ liệu gom.
-Với ảnh $12000\times80000$ điểm ảnh, bản thân việc gom và ghi ảnh đã là một chi
-phí đáng kể, nên việc loại I/O khỏi phép đo — như yêu cầu của prompt — là cần
-thiết để so sánh phần tính toán thuần.
+trong đó $T_{\text{tính}}(P) = \max_r T_{\text{tính},r}$ bị chi phối bởi nút chậm
+nhất trước điểm đồng bộ \code{MPI\_Gather}, còn $T_{\text{truyền thông}}$ tăng
+theo số nút và kích thước dữ liệu gom. Với ảnh $12000\times80000$ điểm ảnh, bản
+thân việc gom và ghi ảnh đã là một chi phí đáng kể, nên việc loại I/O khỏi phép đo
+— như yêu cầu của prompt — là cần thiết để so sánh phần tính toán thuần.
 
 \subsubsection{Tăng tốc và hiệu suất}
 
@@ -334,20 +361,26 @@ Với cùng một khối lượng công việc, tăng tốc (speedup) và hiệu
   E(P) = \frac{S(P)}{P}.
   \label{eq:speedup}
 \end{equation}
-Định luật Amdahl cho biết nếu tỉ lệ tuần tự là $1-f$ thì
+Định luật Amdahl xét bài toán có khối lượng cố định (\term{strong scaling}): nếu
+$1-f$ là tỉ lệ thời gian tuần tự đo trên một bộ xử lý ($0\le f\le 1$), thì
 \begin{equation}
   S(P) = \frac{1}{(1-f) + f/P},
   \label{eq:amdahl}
 \end{equation}
-nên phần tuần tự đặt ra trần tăng tốc. Định luật Gustafson xét bài toán lớn dần
-theo số đơn vị xử lý:
+nên phần tuần tự đặt ra trần tăng tốc $1/(1-f)$ khi $P\to\infty$. Ngược lại, định
+luật Gustafson xét thời gian chạy cố định khi khối lượng phần song song tăng tỉ lệ
+theo $P$ (\term{weak scaling}): gọi $\alpha$ là tỉ lệ thời gian tuần tự đo trên
+$P$ bộ xử lý ($0\le \alpha\le 1$, khác về định nghĩa với $1-f$ trong Amdahl), khi
+đó tăng tốc quy mô là
 \begin{equation}
-  S(P) = (1-f) + fP.
+  S(P) = \alpha + (1-\alpha)P.
   \label{eq:gustafson}
 \end{equation}
-Trong báo cáo, phép đo mở rộng mạnh (strong scaling) giữ nguyên kích thước ảnh và
-tăng số lõi/nút; phép đo mở rộng yếu (weak scaling) không được thực hiện. Vì vậy,
-các đường cong tăng tốc cần được đọc cùng với kích thước bài toán và chi phí I/O.
+Cả hai công thức trên đều là mô hình lý tưởng (chưa tính chi phí đồng bộ và truyền
+thông phụ trội). Trong báo cáo, phép đo mở rộng mạnh (strong scaling) giữ nguyên
+kích thước ảnh và tăng số lõi/nút; phép đo mở rộng yếu (weak scaling) không được
+thực hiện. Vì vậy, các đường cong tăng tốc cần được đọc cùng với kích thước bài
+toán, cân bằng tải và chi phí truyền thông.
 
 \subsection{LLM và bài toán sinh mã}
 
@@ -441,6 +474,51 @@ sâu, trong khi bộ nhiều bài toán kiểm tra được tính khái quát. M
 hợp lý là dùng cả hai lớp: trước tiên sàng nhiều bài toán để tìm mô hình tốt, sau
 đó mới đo sâu scaling trên một bài đại diện như Mandelbrot.
 
-Phần này chỉ đề xuất bối cảnh và phương pháp; báo cáo \emph{không} có số liệu đo
-cho các mô hình mới nêu trên. Việc thêm bảng so sánh tương ứng đòi hỏi chạy thực
-nghiệm thật và sẽ được tính đến trong một đợt mở rộng tiếp theo.
+Trên thực tế, trong năm 2026 đã xuất hiện nhiều công trình độc lập bắt đầu lấp
+khoảng trống về mô hình mới, mô hình trọng số mở chạy local và tính tái lập không
+phụ thuộc khóa API:
+
+\begin{itemize}
+  \item \textbf{Đánh giá tác tử (agentic) trên mô hình trọng số mở chạy local:}
+        Bantel và cộng sự \cite{bantel2026agentic} đánh giá năm mô hình trọng số mở
+        tự vận hành bằng \code{llama.cpp} trên bảy kernel HPC (tính $\pi$, AXPY,
+        GEMV, GEMM, Cholesky, LU, giải hệ) và bốn khung lập trình tác vụ (OpenMP
+        Tasking, HPX, StarPU, TTG) với GCC 13.3.0, sử dụng vòng lặp tự biên dịch và
+        sửa lỗi. Bên cạnh \term{pass@1} và điểm tổng hợp \term{PCGQS} (ba mô hình
+        mạnh nhất đạt 0,67 / 0,64 / 0,43, còn hai mô hình nhỏ chỉ đạt 0,08 và
+        0,00), tác giả đo mở rộng mạnh tới 64 luồng (đạt tăng tốc 48--61$\times$
+        cho bài $\pi$ và trung vị 10,2$\times$ cho nhóm GEMM/phân rã ma trận). Đáng
+        chú ý, công trình vẫn ghi nhận đúng cảnh báo cốt lõi của báo cáo này: tính
+        đúng chức năng thường đánh giá quá cao chất lượng song song, vì một số
+        kernel qua kiểm thử thực chất bị tuần tự hóa.
+  \item \textbf{Bộ chuẩn đa bài toán tái lập không cần API:} HPC-Bench
+        \cite{cui2026hpcbench} đánh giá GPT-5.1, Claude Sonnet 4.5 và
+        Qwen3-Coder-480B trên 114 bài toán thuộc 16 mẫu tính toán HPC (tuần tự EX1,
+        OpenMP EX2 có kiểm soát \code{OMP\_NUM\_THREADS} và cấm gắn cứng số luồng,
+        CUDA EX3), lấy $N=10$ mẫu mỗi bài và dùng hai chỉ số gắn điều kiện đúng đắn
+        là \term{Fast@k} và \term{Speedup@k}. Ở chế độ OpenMP ($k=3$, ngưỡng tăng
+        tốc $p_{\mathrm{thr}}=1{,}0$), GPT-5.1, Claude Sonnet 4.5 và
+        Qwen3-Coder-480B đạt \term{Fast@3} lần lượt là 0,36 / 0,35 / 0,27 với
+        \term{Speedup@3} tương ứng 2,72$\times$ / 2,70$\times$ / 1,67$\times$. Đặc
+        biệt, kho mã HPC-Bench phát hành sẵn toàn bộ ứng viên đã sinh và dữ liệu
+        kết quả thô, cho phép tái lập phần đánh giá hiệu năng mà không cần truy cập
+        API trả phí.
+  \item \textbf{So sánh trực tiếp trên chuỗi công cụ GCC + OpenMP:} Nogueira và
+        cộng sự \cite{nogueira2026openmp} đánh giá zero-shot năm kernel PolyBench/C
+        bằng GCC 13.3 (\code{-O3 -fopenmp}, 64 luồng), đặt các mô hình trọng số mở
+        (Qwen, Codestral, CodeLlama, DeepSeek Coder, Granite Code) cạnh mô hình
+        đóng (ChatGPT 4.5, Gemini 3), mã OpenMP viết tay và trình biên dịch đa diện
+        PoLLy. Mức tăng tốc trung bình cho thấy sự phân hóa rất rõ: ChatGPT 4.5
+        (38,77$\times$) và Gemini 3 (35,56$\times$) vượt bản thủ công
+        (31,98$\times$); trong nhóm trọng số mở, Codestral (30,06$\times$) và Qwen
+        (28,96$\times$) bám sát mã thủ công và vượt PoLLy (18,24$\times$), trong
+        khi CodeLlama chỉ đạt 11,05$\times$.
+\end{itemize}
+
+Ba công trình trên cung cấp bối cảnh cập nhật quan trọng cho cuối năm 2026, nhưng
+đều khác về bộ bài toán và thang đo (\term{PCGQS}, \term{Fast@k}/\term{Speedup@k},
+PolyBench đa kernel) so với thiết kế Mandelbrot với ba prompt P1/P2/P3 và năm biến
+thể C++11/17/20 + OpenMP + MPI+OpenMP của bài báo gốc \cite{diehl2026}. Do đó,
+không nên so sánh trực tiếp các con số giữa hai hệ đo; bản thân báo cáo này vẫn
+\emph{không} tự thực hiện phép đo mới trên bài Mandelbrot cho các mô hình 2026,
+mà coi đây là hướng thực nghiệm bổ sung trong đợt mở rộng tiếp theo.
