@@ -76,7 +76,7 @@ Trình bày gọn trong **3 ý chốt dễ nhớ**:
    - Soát kỹ **vòng đời coroutine** (`final_suspend`, `promise_type`) và **MPI** (`Gatherv`, mốc đo sau gather).
    - Kiểm tra trực quan ảnh/header đầu ra (tránh lỗi P4/P5).
    - Viết prompt rõ ràng buộc phi chức năng: độ phân giải, miền tọa độ phức, backend, loại trừ I/O.
-3. **Hướng phát triển (Mục 6.3 & bối cảnh 3 nghiên cứu 2026 `[18]–[20]`):** mở rộng sang bài toán truyền thông dày (stencil, FFT, FEM), lặp nhiều lần sinh để thống kê, đánh giá quy trình agentic (tự biên dịch–sửa lỗi) và xây dựng bộ tiêu chí HPC ngoài tỉ lệ biên dịch.
+3. **Hướng phát triển (Mục 6.3 & bối cảnh 3 nghiên cứu 2026 `[9]–[11]`):** mở rộng sang bài toán truyền thông dày (stencil, FFT, FEM), lặp nhiều lần sinh để thống kê, đánh giá quy trình agentic (tự biên dịch–sửa lỗi) và xây dựng bộ tiêu chí HPC ngoài tỉ lệ biên dịch.
 
 ---
 

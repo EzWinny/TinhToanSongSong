@@ -30,7 +30,7 @@
 
 ## Quy ước báo cáo
 
-- Viết tiếng Việt. Mọi `\bibitem` trong `sections/08-tai-lieu.tex` phải có `\cite` tương ứng (hiện 20 nguồn).
+- Viết tiếng Việt. Mọi `\bibitem` trong `sections/08-tai-lieu.tex` phải có `\cite` tương ứng (hiện 11 nguồn).
 - Bảng giải trình tài liệu và kết quả tra cứu bài mới nằm ở `Report/docs/` (`giai-trinh-tai-lieu.md`, `nghien-cuu-bai-moi-hon.md`). Đọc trước khi đổi tên tác giả, danh sách tài liệu tham khảo hoặc mục 2.7.
 - File sinh ra (`*.aux`, `*.log`, `*.toc`, `*.lof`, `*.lot`, `*.out`, `*.exe`, `*.pgm`, `results.txt`, `speedup.png`) đã được ignore — không commit.
 
