@@ -4,7 +4,7 @@
 
 \subsubsection{Định nghĩa và thuật toán thoát}
 
-Tập Mandelbrot được định nghĩa từ phép lặp trên mặt phẳng phức \cite{brooks1980}. Với mỗi số phức
+Tập Mandelbrot được định nghĩa từ phép lặp trên mặt phẳng phức. Với mỗi số phức
 $c\in\mathbb{C}$, xét dãy
 \begin{equation}
   z_0 = 0, \qquad z_{n+1} = z_n^2 + c, \quad n=0,1,2,\ldots
@@ -298,7 +298,7 @@ nhớ cách xa nhau, nhưng nó có thể xuất hiện nếu chia ảnh theo c�
 
 \subsubsection{SPMD và truyền thông}
 
-MPI theo mô hình \term{Single Program, Multiple Data} \cite{gropp1999}: mọi tiến trình chạy cùng
+MPI theo mô hình \term{Single Program, Multiple Data}: mọi tiến trình chạy cùng
 một chương trình, mỗi tiến trình có một định danh \code{rank} và biết tổng số
 tiến trình \code{size}. Truyền thông điểm--điểm dùng \code{MPI\_Send} và
 \code{MPI\_Recv}; truyền thông tập thể dùng \code{MPI\_Bcast}, \code{MPI\_Reduce},
@@ -424,13 +424,9 @@ tóm tắt các công trình tiêu biểu và khoảng trống mà bài báo g�
 \textbf{Công trình} & \textbf{Nội dung chính} & \textbf{Giới hạn so với bài báo} \\
 \midrule
 LLM4HPC \cite{chen2023llm4hpc} & Khung đầu tiên cho HPC: phân tích tương đồng mã, phát hiện song song, hỏi đáp OpenMP & Tập trung vào phân tích, chưa đo mở rộng \\
-LLM4VV \cite{munley2024llm4vv} & Tinh chỉnh GPT-4 và CodeLLaMA sinh chỉ thị OpenACC & Chỉ một mô hình chỉ thị \\
-HPC-GPT \cite{ding2023hpcgpt} & LLaMA-13B cho quản lý mô hình AI, dữ liệu và phát hiện tranh chấp & Không so sánh đa mô hình lập trình \\
-HPC-Coder \cite{nichols2024hpccoder,chaturvedi2025hpccoderv2} & Hoàn thành mã cho OpenMP, MPI, CUDA & Bài toán hoàn thành mã, không phải sinh từ đầu \\
+HPC-Coder-v2 \cite{chaturvedi2025hpccoderv2} & Hoàn thành mã cho OpenMP, MPI, CUDA và ngôn ngữ song song ít tài nguyên & Bài toán hoàn thành mã, không phải sinh từ đầu \\
 OMPGPT \cite{chen2024ompgpt} & Mô hình chuyên sinh mã OpenMP & Chỉ OpenMP \\
 MPIRigen \cite{schneider2024mpirigen} & Mô hình miền chuyên sinh mã MPI & Chỉ MPI \\
-Tokompiler \cite{kadosh2023tokompiler} & LLM miền hẹp cho Fortran, C, C++ & Tập trung hoàn thành mã \\
-chatHPC \cite{yin2025chathpc} & Chatbot hỗ trợ hỏi đáp và sinh script HPC & Không đánh giá mã song song C++ \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -466,7 +462,7 @@ vì một lần sinh như hiện tại chỉ là một mẫu tiêu biểu.
 nên không nên so trực tiếp con số của chúng với con số ở đây. Một hướng là chạy
 nhiều bài toán thay vì một bài Mandelbrot duy nhất, nhằm đo mức độ khái quát của
 mô hình; hướng khác lại tập trung vào kernel hoặc vào bài toán hoàn thành mã như
-đã nêu trong Bảng~\ref{tab:related} \cite{nichols2024hpccoder,chaturvedi2025hpccoderv2}.
+đã nêu trong Bảng~\ref{tab:related} \cite{chaturvedi2025hpccoderv2}.
 Ngoài tỉ lệ biên dịch và \term{pass@k}, một số nghiên cứu còn dùng phân tích tĩnh,
 profiling hoặc đo trên nhiều ngôn ngữ \cite{chen2023llm4hpc}. Những chỉ số này trả
 lời những câu hỏi khác: bài toán đơn kiểm tra được mức độ đúng và khả năng mở rộng
