@@ -25,6 +25,7 @@ pdflatex -interaction=nonstopmode slides.tex
 | **3** | **Phần 3 • Phân tích lỗi thực tế** | Đồng Đức Dương (`24001659`) | [`notes/03-phan-3-phan-tich-loi-thuc-te.md`](notes/03-phan-3-phan-tich-loi-thuc-te.md) | Phần 4.1–4.5 (*Kết quả & lỗi, LOC/COCOMO*) & Phần 5.1–5.5 | ~5–6 phút |
 | **4** | **Phần 4 • Hiệu năng & tổng kết** *(+ Gemini 4)* | Nguyễn Như Bảo (`24001655`) | [`notes/04-phan-4-hieu-nang-va-tong-ket.md`](notes/04-phan-4-hieu-nang-va-tong-ket.md) | Phần 4.6–4.9 (*Mở rộng, Mã con người, Gemini 4*), Phần 5.6–5.7 & Phần 6 | ~6–7 phút |
 | **5** | **Hỏi – Đáp (Q&A) & Phản biện** | **Cả 4 thành viên** | [`notes/05-qa-phan-bien-va-luu-y-chung.md`](notes/05-qa-phan-bien-va-luu-y-chung.md) | Phụ lục C + toàn bộ báo cáo | ~5–10 phút |
+| **Bổ trợ** | **Giải thích nhanh: `static` / `dynamic` / `guided`** | **Cả 4 thành viên** | [`notes/06-giai-thich-lap-lich-openmp.md`](notes/06-giai-thich-lap-lich-openmp.md) | Mục 2.3 (OpenMP), Demo Menu 3 & Hình 6 (MPI) | Tra cứu nhanh |
 
 ---
 
