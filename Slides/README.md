@@ -1,12 +1,12 @@
 # Tài liệu thuyết trình & Ghi chú minh họa (`Slides/`)
 
-Thư mục này chứa toàn bộ tài liệu hướng dẫn, dàn ý 20 slide, chú thích hình vẽ/bảng biểu và lưu ý kỹ thuật cho 4 thành viên khi thiết kế slide và thuyết trình đề tài **Đánh giá mã C++ hiện đại và MPI+OpenMP do LLM sinh cho bài toán tập Mandelbrot có khả năng mở rộng**.
+Thư mục này chứa toàn bộ tài liệu hướng dẫn, dàn ý 21 slide, chú thích hình vẽ/bảng biểu và lưu ý kỹ thuật cho 4 thành viên khi thiết kế slide và thuyết trình đề tài **Đánh giá mã C++ hiện đại và MPI+OpenMP do LLM sinh cho bài toán tập Mandelbrot có khả năng mở rộng**.
 
-> **Slide thành phẩm (LaTeX Beamer 16:9, 20 trang):** [`Slide-LLM-HPC-Mandelbrot.pdf`](Slide-LLM-HPC-Mandelbrot.pdf) — mã nguồn: [`slides.tex`](slides.tex)  
+> **Slide thành phẩm (LaTeX Beamer 16:9, 21 trang):** [`Slide-LLM-HPC-Mandelbrot.pdf`](Slide-LLM-HPC-Mandelbrot.pdf) — mã nguồn: [`slides.tex`](slides.tex)  
 > **Xem nhanh dàn ý chi tiết từng slide (Slide 1 – Slide 20):** [`outline-slides.md`](outline-slides.md)
 
 ### Biên dịch lại slide (nếu chỉnh sửa `slides.tex`)
-Chạy pdfLaTeX **2 lượt** từ bên trong thư mục `Slides/` (dùng phông Latin Modern Sans T5 chuẩn Beamer tiếng Việt, để số tổng trang `X/20` và thanh tiến trình khớp):
+Chạy pdfLaTeX **2 lượt** từ bên trong thư mục `Slides/` (dùng phông Latin Modern Sans T5 chuẩn Beamer tiếng Việt, để số tổng trang `X/21` và thanh tiến trình khớp):
 ```powershell
 cd Slides
 pdflatex -interaction=nonstopmode slides.tex
@@ -51,3 +51,13 @@ pdflatex -interaction=nonstopmode slides.tex
 - **Bảng 4 & Bảng 5:** Ma trận 4×5 & cấu hình cụm `rostam` → [`02-phan-2-kien-truc-thuc-nghiem-va-demo.md`](notes/02-phan-2-kien-truc-thuc-nghiem-va-demo.md).
 - **Bảng 6, 7, 8, 9:** Tỉ lệ thành công, 19 lỗi tiêu biểu, phân loại lỗi, LOC MPI+OpenMP → [`03-phan-3-phan-tich-loi-thuc-te.md`](notes/03-phan-3-phan-tich-loi-thuc-te.md).
 - **Bảng 10, 11, 12:** So sánh với mã con người, tổng hợp Gemini 4 Hydrogen *(bản mở rộng)*, danh mục kiểm duyệt mã song song → [`04-phan-4-hieu-nang-va-tong-ket.md`](notes/04-phan-4-hieu-nang-va-tong-ket.md).
+
+---
+
+## 4. Ghi chú bổ sung từ bản local (26/11/2026)
+
+- Các file slide HTML cũ đã được xoá theo yêu cầu; thư mục giữ lại tài liệu tham khảo và ràng buộc trình bày.
+- Slide phục vụ **4 người thuyết trình**, tổng thời lượng **~20 phút** (~5 phút/người); ưu tiên một ý mỗi slide.
+- Storyboard 16 slide / đúng 20:00, số liệu lấy từ bản PDF bổ sung Gemini 4: [`cau-truc-slide-20phut-4nguoi.md`](cau-truc-slide-20phut-4nguoi.md).
+- Tài liệu tham khảo thiết kế còn giữ: `tham-khao-anthropic/` và `Report/docs/tham-khao-cau-truc-slide.md`.
+- Bản 21 slide (cập nhật 27/11/2026): slide 14 cũ tách thành **slide 14 (LOC/Bảng 9)** và **slide 15 (COCOMO)**; slide 4 đổi ảnh (b) sang viền trắng; slide 7/16 cân đối khung; slide 15 (mới, mở rộng 1 nút) dùng 4 biểu đồ phóng to. Phần 4 bắt đầu từ slide 16.

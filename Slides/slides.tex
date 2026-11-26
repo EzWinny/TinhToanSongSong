@@ -9,7 +9,7 @@
 % ===================== GÓI HỖ TRỢ =====================
 \usepackage{amsmath,amssymb}
 \usepackage{graphicx}
-\graphicspath{{../Report/figures/}}
+\graphicspath{{../Report/figures/}{figures/}}
 \usepackage{booktabs}
 \usepackage{tabularx}
 \usepackage{array}
@@ -253,7 +253,7 @@
 
 \begin{columns}[T,totalwidth=\textwidth]
   \begin{column}{0.485\textwidth}
-    \begin{bluebox}[height=2.95cm]{Phần 3 \;\textbullet\; Phân tích lỗi thực tế \hfill {\scriptsize Slide 11--14}}
+    \begin{bluebox}[height=2.95cm]{Phần 3 \;\textbullet\; Phân tích lỗi thực tế \hfill {\scriptsize Slide 11--15}}
       \textbf{\footnotesize Đồng Đức Dương} {\scriptsize(\color{Muted}24001659)}
       \begin{itemize}\scriptsize\setlength{\itemsep}{2pt}
         \item Hố ngăn cách giữa Biên dịch (100\%) và Thực thi.
@@ -263,7 +263,7 @@
     \end{bluebox}
   \end{column}
   \begin{column}{0.485\textwidth}
-    \begin{bluebox}[height=2.95cm]{Phần 4 \;\textbullet\; Hiệu năng \& tổng kết \hfill {\scriptsize Slide 15--20}}
+    \begin{bluebox}[height=2.95cm]{Phần 4 \;\textbullet\; Hiệu năng \& tổng kết \hfill {\scriptsize Slide 16--21}}
       \textbf{\footnotesize Nguyễn Như Bảo} {\scriptsize(\color{Muted}24001655)}
       \begin{itemize}\scriptsize\setlength{\itemsep}{2pt}
         \item Mở rộng 1 nút (1--20 lõi), phân tán (1--12 nút) \& \code{Human [5]}.
@@ -311,7 +311,7 @@
 % SLIDE 4: BÀI TOÁN TẬP MANDELBROT
 \begin{frame}{Bài toán tập Mandelbrot \& tính mất cân bằng tải}
 \begin{columns}[T,totalwidth=\textwidth]
-  \begin{column}{0.50\textwidth}
+  \begin{column}{0.49\textwidth}
     \begin{bluebox}{Định nghĩa thuật toán thoát (\emph{escape-time})}
       \centering $z_0 = 0, \qquad z_{k+1} = z_k^2 + c \quad (c = c_r + i c_i)$\\[4pt]
       \raggedright\scriptsize Dừng khi $|z_k| > 2$ (ngoài tập) hoặc chạm $I_{\max} = 1000$ vòng (trong tập --- vùng đen đặc).
@@ -325,12 +325,12 @@
       \end{itemize}
     \end{hboxcard}
   \end{column}
-  \begin{column}{0.47\textwidth}
+  \begin{column}{0.49\textwidth}
     \centering
-    \includegraphics[width=0.77\linewidth]{mandelbrot_coroutine.png}\\[-2pt]
+    \includegraphics[width=0.78\linewidth]{mandelbrot_coroutine.png}\\[-2pt]
     {\tiny\color{Muted}(a) ChatGPT-5 --- C++20 Coroutines ($1920\times 1080$)}\\[3pt]
-    \includegraphics[width=0.77\linewidth]{mandelbrot_mpi.jpg}\\[-2pt]
-    {\tiny\color{Muted}(b) ChatGPT-5 --- MPI+OpenMP (khác bảng màu dù cùng LLM!)}
+    \includegraphics[width=0.74\linewidth]{mandelbrot_mpi_white.png}\\[-2pt]
+    {\tiny\color{Muted}(b) MPI+OpenMP (viền trắng)}
   \end{column}
 \end{columns}
 \end{frame}
@@ -393,22 +393,23 @@ MPI + OpenMP & Phân tán (N nút) & Chia phân vùng theo \code{-p} + OpenMP tr
 \begin{frame}{Ma trận thực nghiệm (4 LLM $\times$ 5 biến thể) \& Hạ tầng đo}
 \begin{columns}[T,totalwidth=\textwidth]
   \begin{column}{0.51\textwidth}
-    {\footnotesize\bfseries\color{BlueDark}Ma trận 20 chương trình (Bảng 4 --- zero-shot 1 lần sinh)}\vspace{3pt}
-    \scriptsize
-    \renewcommand{\arraystretch}{1.22}
-    \begin{tabular}{@{}lcccc@{}}
-      \toprule
-      \rowcolor{BlueSoft}
-      \textbf{Biến thể} & \textbf{GPT-5} & \textbf{GPT-4} & \textbf{Claude} & \textbf{LLaMA} \\
-      \midrule
-      C++11 \code{async}     & \ok{\checkmark} & \ok{\checkmark} & \ok{\checkmark} & \ok{\checkmark} \\
-      C++17 \code{par\_algo} & \ok{\checkmark} & \ok{\checkmark} & \ok{\checkmark} & \ok{\checkmark} \\
-      C++20 \code{coroutine} & \ok{\checkmark} & \ok{\checkmark} & \ok{\checkmark} & \ok{\checkmark} \\
-      OpenMP                 & \ok{\checkmark} & \ok{\checkmark} & \ok{\checkmark} & \ok{\checkmark} \\
-      MPI + OpenMP           & \ok{\checkmark} & \ok{\checkmark} & \ok{\checkmark} & \ok{\checkmark} \\
-      \bottomrule
-    \end{tabular}
-    \vspace{0.92cm}
+    \begin{bluebox}[height=3.65cm]{Ma trận 20 chương trình (Bảng 4)}
+      \centering\scriptsize
+      \renewcommand{\arraystretch}{1.22}
+      \begin{tabular}{@{}lcccc@{}}
+        \toprule
+        \rowcolor{BlueSoft}
+        \textbf{Biến thể} & \textbf{GPT-5} & \textbf{GPT-4} & \textbf{Claude} & \textbf{LLaMA} \\
+        \midrule
+        C++11 \code{async}     & \ok{\checkmark} & \ok{\checkmark} & \ok{\checkmark} & \ok{\checkmark} \\
+        C++17 \code{par\_algo} & \ok{\checkmark} & \ok{\checkmark} & \ok{\checkmark} & \ok{\checkmark} \\
+        C++20 \code{coroutine} & \ok{\checkmark} & \ok{\checkmark} & \ok{\checkmark} & \ok{\checkmark} \\
+        OpenMP                 & \ok{\checkmark} & \ok{\checkmark} & \ok{\checkmark} & \ok{\checkmark} \\
+        MPI + OpenMP           & \ok{\checkmark} & \ok{\checkmark} & \ok{\checkmark} & \ok{\checkmark} \\
+        \bottomrule
+      \end{tabular}
+    \end{bluebox}
+    \vspace{0.22cm}
     \begin{hboxcard}[height=1.72cm]{Nguyên tắc sinh mã}
       \scriptsize Mỗi cặp (LLM, biến thể) gửi prompt \textbf{1 lần duy nhất}, không kèm ngữ cảnh hay gợi ý sửa lỗi; con người chỉ sửa tối thiểu sau khi ghi nhận đầy đủ lỗi.
     \end{hboxcard}
@@ -653,38 +654,49 @@ while (!tasks[i].done()) // treo mai mai!
 \end{columns}
 \end{frame}
 
-% SLIDE 14: ĐỘ DÀI MÃ (LOC) & CÔNG SỨC COCOMO
-\begin{frame}{Kích thước mã (LOC) \& Đánh giá chất lượng -- công sức (COCOMO)}
+% SLIDE 14: KÍCH THƯỚC MÃ (LOC) & BẢNG 9
+\begin{frame}{Kích thước mã (LOC) \& Bảng 9 (MPI+OpenMP)}
 \begin{columns}[T,totalwidth=\textwidth]
-  \begin{column}{0.48\textwidth}
+  \begin{column}{0.58\textwidth}
     \centering
-    \includegraphics[width=0.83\linewidth]{fig_loc.png}\\[-2pt]
-    {\tiny\color{Muted}Hình 3: LOC 4 biến thể chia sẻ (LLaMA coroutine phải thêm 37--39 dòng).}\\[4pt]
-    \scriptsize
-    \renewcommand{\arraystretch}{1.15}
-    \begin{tabular}{@{}lcccc@{}}
-      \toprule
-      \rowcolor{BlueSoft}
-      \textbf{MPI LOC (Bảng 9)} & GPT-5 & GPT-4 & Claude & LLaMA \\
-      \midrule
-      Số dòng mã & 143 & 91 & 116 & 71 $\to$ \warn{82} \\
-      \bottomrule
-    \end{tabular}
+    \includegraphics[width=0.94\linewidth]{fig_loc.png}\\[-2pt]
+    {\tiny\color{Muted}Hình 3: LOC 4 biến thể chia sẻ (LLaMA coroutine phải thêm 37--39 dòng).}
   \end{column}
-  \begin{column}{0.50\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{fig_cocomo.png}\\[-1pt]
-    {\tiny\color{Muted}Hình 4: Chất lượng (Poor $\to$ Good) vs Công sức COCOMO (Easy $\to$ Difficult).}
-    \vspace{4pt}
-    \begin{bluebox}[top=3pt,bottom=3pt]{Cách đọc Hình 4 \& Nhận xét}
-      \begin{itemize}\scriptsize\setlength{\itemsep}{1.8pt}
-        \item \textbf{Trái (chia sẻ):} màu = LLM (\textbf{Đen} GPT-5, \textcolor{BlueMid}{Xanh dương} GPT-4, \textcolor{OkGreen}{Xanh lá} Claude, \textcolor{Muted}{Xám} LLaMA); hình = biến thể. Cụm đen GPT-5 ở góc trên; 2 \emph{outlier} xám LLaMA rơi xuống đáy.
-        \item \textbf{Phải (MPI):} GPT-5 ($\spadesuit$) cao nhất; LLaMA ($\bigstar$) thấp nhất.
-        \item \textbf{Bài học:} Claude viết dài nhất nhưng vẫn treo coroutine $\implies$ \textbf{chất lượng không tỉ lệ với LOC}.
+  \begin{column}{0.40\textwidth}
+    \begin{bluebox}{MPI LOC (Bảng 9)}
+      \centering\scriptsize
+      \renewcommand{\arraystretch}{1.25}
+      \begin{tabular}{@{}lcccc@{}}
+        \toprule
+        \rowcolor{BlueSoft}
+        GPT-5 & GPT-4 & Claude & LLaMA \\
+        \midrule
+        143 & 91 & 116 & 71 $\to$ \warn{82} \\
+        \bottomrule
+      \end{tabular}
+      \vspace{4pt}
+      \raggedright
+      \begin{itemize}\scriptsize\setlength{\itemsep}{3pt}
+        \item LLaMA ngắn nhất nhưng phải \textbf{vá thêm 37--39 dòng}.
+        \item GPT-5 dài nhất (143) nhưng \ok{sạch nhất}.
       \end{itemize}
     \end{bluebox}
   \end{column}
 \end{columns}
+\end{frame}
+
+% SLIDE 15: CHẤT LƯỢNG & CÔNG SỨC COCOMO (TÁCH TỪ SLIDE 14 CŨ)
+\begin{frame}{Đánh giá chất lượng -- công sức (COCOMO)}
+\centering
+\includegraphics[width=0.94\linewidth]{fig_cocomo.png}\\[-2pt]
+{\tiny\color{Muted}Hình 4: Chất lượng (Poor $\to$ Good) vs Công sức COCOMO (Easy $\to$ Difficult).}
+\vspace{6pt}
+\begin{bluebox}[height=2.05cm]{Cách đọc Hình 4 \& Nhận xét}
+  \begin{itemize}\scriptsize\setlength{\itemsep}{3pt}
+    \item \textbf{Trái (chia sẻ):} GPT-5 (đen) ở góc tốt; 2 \emph{outlier} LLaMA (xám) rơi xuống đáy.
+    \item \textbf{Phải (MPI):} GPT-5 ($\spadesuit$) cao nhất; LLaMA ($\bigstar$) thấp nhất $\implies$ \textbf{chất lượng không tỉ lệ với LOC}.
+  \end{itemize}
+\end{bluebox}
 \end{frame}
 
 % ==========================================================================
@@ -692,64 +704,51 @@ while (!tasks[i].done()) // treo mai mai!
 % ==========================================================================
 \setpart{Phần 4 \textbullet{} Nguyễn Như Bảo}
 
-% SLIDE 15: MỞ RỘNG TRÊN 1 NÚT (HÌNH 5)
+% SLIDE 16: MỞ RỘNG TRÊN 1 NÚT (HÌNH 5 — 4 BIỂU ĐỒ PHÓNG TO)
 \begin{frame}{Khả năng mở rộng trên 1 nút (1--20 lõi, \texttt{pixel updates/s})}
-\begin{columns}[T,totalwidth=\textwidth]
-  \begin{column}{0.57\textwidth}
-    \centering
-    \includegraphics[width=0.97\linewidth]{fig_scaling_shared.png}\\[-2pt]
-    {\tiny\color{Muted}Hình 5: Mở rộng 1 nút (Xeon Gold 6148, 20 lõi). Chú ý thang (a,d) là $\times 10^9$, còn (b,c) là $\times 10^7$.}
-  \end{column}
-  \begin{column}{0.41\textwidth}
-    \begin{bluebox}[top=3pt,bottom=3pt]{Phân biệt 2 kiểu ``đường phẳng''!}
-      \scriptsize
-      \textbf{1. Phẳng nằm CAO} (b: Claude, GPT-4, LLaMA; c: LLaMA) = \bad{LỖI bỏ qua \code{-t}} (chạy full 20 lõi ngay cả ở \code{-t 1}).\\[2.5pt]
-      \textbf{2. Phẳng sát trục 0} (a, d: Human, GPT-5, Claude) = \ok{vẫn mở rộng tốt} ở mức $10^7$, chỉ bị nén trên thang tuyến tính $\times 10^9$!
-    \end{bluebox}
-    \vspace{0.20cm}
-    \begin{hboxcard}[top=3pt,bottom=3pt]{Tóm tắt 4 biến thể}
-      \begin{itemize}\scriptsize\setlength{\itemsep}{1.5pt}
-        \item \textbf{(a) Async:} GPT-4 vọt lên $\sim 5{,}6\times 10^9$ px/s.
-        \item \textbf{(b) Par\_algo:} chỉ GPT-5 mở rộng đúng nhưng thua \code{Human [5]} ($>2\times$).
-        \item \textbf{(c) Coroutine:} \code{Human [5]} dẫn đầu ($\sim 1{,}06\times 10^7$); GPT-4/5 trùng nhau ($\sim 0{,}8\times 10^7$).
-        \item \textbf{(d) OpenMP:} LLM vượt mã sách (đồ thị gắn $\blacksquare$ GPT-4, văn bản nêu GPT-5).
-      \end{itemize}
-    \end{hboxcard}
-  \end{column}
-\end{columns}
+\centering
+\begin{tabular}{@{}cc@{}}
+  \includegraphics[width=0.29\textwidth]{fig_scaling_shared_a} &
+  \includegraphics[width=0.226\textwidth]{fig_scaling_shared_b}\\[4pt]
+  \includegraphics[width=0.29\textwidth]{fig_scaling_shared_c} &
+  \includegraphics[width=0.226\textwidth]{fig_scaling_shared_d}
+\end{tabular}
 \end{frame}
 
-% SLIDE 16: MỞ RỘNG PHÂN TÁN & SO SÁNH MÃ CON NGƯỜI
+% SLIDE 17: MỞ RỘNG PHÂN TÁN & SO SÁNH MÃ CON NGƯỜI (CÂN ĐỐI NHƯ SLIDE 7)
 \begin{frame}{Mở rộng phân tán (1--12 nút) \& So sánh với mã con người}
 \begin{columns}[T,totalwidth=\textwidth]
-  \begin{column}{0.45\textwidth}
+  \begin{column}{0.47\textwidth}
+    {\footnotesize\bfseries\color{BlueDark}Hình 6: MPI+OpenMP (thang $\log_2$)}\vspace{3pt}\\
     \centering
     \includegraphics[width=0.70\linewidth]{fig_scaling_dist.png}\\[-2pt]
-    {\tiny\color{Muted}Hình 6: MPI+OpenMP ($12000\times 80000$, thang $\log_2$). Đường xanh trái tim là \code{Human [5]}.}
-    \vspace{4pt}
-    \begin{bluebox}[height=1.80cm,top=3pt,bottom=3pt]{Vì sao cả 4 LLM đều chững ở $2\to 4$ nút?}
-      \scriptsize Tập Mandelbrot đối xứng trục thực: chia tĩnh 2 dải trên/dưới cân bằng tuyệt đối, nhưng chia 4 dải thì \textbf{2 dải giữa ôm gần hết ruột đen}, chặn bước \code{MPI\_Gather}!
+    {\tiny\color{Muted}Đường xanh trái tim là \code{Human [5]}.}
+    \par\vspace{0.12cm}
+    \begin{bluebox}[height=0.95cm]{Vì sao chững ở $2\to 4$ nút?}
+      \scriptsize Chia 4 dải thì \textbf{2 dải giữa ôm ruột đen} $\implies$ chặn Gather.
     \end{bluebox}
   \end{column}
-  \begin{column}{0.53\textwidth}
-    {\footnotesize\bfseries\color{BlueDark}Bảng 10: So sánh với mã sách \emph{Parallel C++} (\code{Human [5]})}\vspace{3pt}
-    \scriptsize
-    \renewcommand{\arraystretch}{1.20}
-    \begin{tabularx}{\textwidth}{@{}>{\bfseries\color{BlueDark}}p{1.95cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}p{2.25cm}@{}}
-      \toprule
-      \rowcolor{BlueSoft}
-      \textbf{Biến thể} & \textbf{Kết quả so sánh} & \textbf{Nhận xét} \\
-      \midrule
-      Bất đồng bộ & GPT-4 vượt mã sách nhờ tối ưu & LLM mạnh ở mẫu quen \\
-      Thuật toán SS & Mã sách nhanh hơn GPT-5 ($>2\times$) & Mở rộng ổn định hơn \\
-      Coroutine & Mã sách vượt GPT-4/5 và Claude & Khoảng cách lớn nhất \\
-      OpenMP & GPT-5 vượt mã sách (theo văn bản) & Ngoại lệ nổi bật \\
-      MPI+OpenMP & Mã sách dẫn đầu trên cả 1--12 nút & Phân vùng cân bằng hơn \\
-      \bottomrule
-    \end{tabularx}
-    \vspace{0.25cm}
-    \begin{hboxcard}[height=1.80cm,top=3pt,bottom=3pt]{Kết luận so sánh}
-      \scriptsize LLM ngang/vượt mã con người ở mẫu đơn giản (async, OpenMP), nhưng \textbf{thua ở mẫu điều phối tinh vi} (coroutine, TBB, MPI phân tán).
+  \begin{column}{0.51\textwidth}
+    \begin{bluebox}[height=4.10cm,top=1pt,bottom=1pt]{Bảng 10: So sánh \code{Human [5]}}
+      \tiny
+      \setlength{\tabcolsep}{2pt}
+      \renewcommand{\arraystretch}{0.85}
+      \begin{tabularx}{\textwidth}{@{}>{\bfseries\color{BlueDark}}p{1.25cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}p{1.70cm}@{}}
+        \toprule
+        \rowcolor{BlueSoft}
+        \textbf{Biến thể} & \textbf{Kết quả} & \textbf{Nhận xét} \\
+        \midrule
+        Async & GPT-4 $>$ mã sách & Mẫu quen \\
+        Par\_algo & Sách $>$ 2$\times$ GPT-5 & Mở rộng tốt \\
+        Coroutine & Sách $>$ GPT-4/5 & Cách biệt lớn \\
+        OpenMP & GPT-5 $>$ mã sách & Ngoại lệ \\
+        MPI+OpenMP & Sách dẫn đầu & Phân vùng tốt \\
+        \bottomrule
+      \end{tabularx}
+    \end{bluebox}
+    \vspace{0.78cm}
+    \begin{hboxcard}[height=0.95cm]{Kết luận so sánh}
+      \scriptsize LLM thắng mẫu quen, thua mẫu điều phối.
     \end{hboxcard}
   \end{column}
 \end{columns}
