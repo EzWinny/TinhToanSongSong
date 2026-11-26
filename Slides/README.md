@@ -1,6 +1,18 @@
 # Tài liệu thuyết trình & Ghi chú minh họa (`Slides/`)
 
-Thư mục này chứa toàn bộ tài liệu hướng dẫn, chú thích hình vẽ/bảng biểu và lưu ý kỹ thuật cho 4 thành viên khi thiết kế slide và thuyết trình đề tài **Đánh giá mã C++ hiện đại và MPI+OpenMP do LLM sinh cho bài toán tập Mandelbrot có khả năng mở rộng**.
+Thư mục này chứa toàn bộ tài liệu hướng dẫn, dàn ý 20 slide, chú thích hình vẽ/bảng biểu và lưu ý kỹ thuật cho 4 thành viên khi thiết kế slide và thuyết trình đề tài **Đánh giá mã C++ hiện đại và MPI+OpenMP do LLM sinh cho bài toán tập Mandelbrot có khả năng mở rộng**.
+
+> **Slide thành phẩm (LaTeX Beamer 16:9, 20 trang):** [`Slide-LLM-HPC-Mandelbrot.pdf`](Slide-LLM-HPC-Mandelbrot.pdf) — mã nguồn: [`slides.tex`](slides.tex)  
+> **Xem nhanh dàn ý chi tiết từng slide (Slide 1 – Slide 20):** [`outline-slides.md`](outline-slides.md)
+
+### Biên dịch lại slide (nếu chỉnh sửa `slides.tex`)
+Chạy XeLaTeX **2 lượt** từ bên trong thư mục `Slides/` (để số tổng trang `X/20` và thanh tiến trình khớp):
+```powershell
+cd Slides
+xelatex -interaction=nonstopmode slides.tex
+xelatex -interaction=nonstopmode slides.tex
+```
+*(Sau khi biên dịch, đổi tên `slides.pdf` thành `Slide-LLM-HPC-Mandelbrot.pdf`.)*
 
 ---
 

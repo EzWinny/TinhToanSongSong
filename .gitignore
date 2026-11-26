@@ -50,3 +50,17 @@ Report/*.snm
 Report/*.vrb
 Report/main.pdf
 Report/main-bo-sung.pdf
+
+# File sinh ra khi biên dịch Slide LaTeX Beamer
+Slides/*.aux
+Slides/*.log
+Slides/*.toc
+Slides/*.out
+Slides/*.nav
+Slides/*.snm
+Slides/*.vrb
+Slides/*.fls
+Slides/*.fdb_latexmk
+Slides/*.synctex.gz
+Slides/*.xdv
+Slides/slides.pdf
