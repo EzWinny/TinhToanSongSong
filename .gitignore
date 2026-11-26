@@ -2,19 +2,51 @@
 .agents/
 .serena/
 
-# File sinh ra khi chạy demo
-Demo/mandelbrot/*.exe
-Demo/mandelbrot/*.pgm
-Demo/mandelbrot/results.txt
-Demo/speedup.png
-Demo/mandel_view.png
-Demo/llm_eval/**/_build/
-Demo/llm_eval/**/*.exe
+# Môi trường Python & cache
+.venv/
+venv/
+__pycache__/
+*.py[cod]
 
-# File sinh ra khi biên dịch LaTeX
+# IDE & hệ điều hành
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# File biên dịch / tạm của C++ và Demo
+*.exe
+*.o
+*.obj
+Demo/mandelbrot/*.pgm
+Demo/mandelbrot/*.pbm
+Demo/mandelbrot/*.ppm
+Demo/mandelbrot/results.txt
+Demo/speedup*.png
+Demo/mandel_view*.png
+Demo/llm_eval/**/_build/
+Demo/llm_eval/**/*.pbm
+Demo/llm_eval/**/*.pgm
+Demo/llm_eval/**/*.ppm
+
+# File sinh ra khi biên dịch LaTeX (XeLaTeX / latexmk / LaTeX Workshop)
 Report/*.aux
+Report/sections/*.aux
 Report/*.log
 Report/*.toc
 Report/*.lof
 Report/*.lot
 Report/*.out
+Report/*.fls
+Report/*.fdb_latexmk
+Report/*.synctex.gz
+Report/*.synctex(busy)
+Report/*.bbl
+Report/*.blg
+Report/*.xdv
+Report/*.nav
+Report/*.snm
+Report/*.vrb
+Report/main.pdf
+Report/main-bo-sung.pdf

@@ -1,3 +1,4 @@
+import io
 import os
 import re
 import shutil
@@ -122,6 +123,30 @@ def bars(labels, values):
         print(f"  {label:>6}: {'#' * n} {v:.2f}x")
 
 
+def save_bytes_safe(out: Path, data: bytes) -> Path:
+    """Ghi anh an toan tren Windows (tranh Errno 22 khi anh dang mo o Photos/VS Code)."""
+    try:
+        out.write_bytes(data)
+        return out
+    except OSError:
+        for idx in range(1, 100):
+            alt = out.with_name(f"{out.stem}_{idx}{out.suffix}")
+            try:
+                alt.write_bytes(data)
+                print(f"(Luu y: {out.name} dang mo trong ung dung khac, da luu sang {alt.name})")
+                return alt
+            except OSError:
+                continue
+        raise
+
+
+def save_current_fig(name: str) -> Path:
+    buf = io.BytesIO()
+    plt.savefig(buf, format="png", dpi=150, bbox_inches="tight")
+    plt.close()
+    return save_bytes_safe(HERE / name, buf.getvalue())
+
+
 def plot(xs, ys, name, title):
     plt.figure(figsize=(7, 4.5))
     plt.plot(xs, ys, "o-", label="OpenMP")
@@ -131,9 +156,7 @@ def plot(xs, ys, name, title):
     plt.title(title)
     plt.legend()
     plt.grid(True)
-    out = HERE / name
-    plt.savefig(out, dpi=150, bbox_inches="tight")
-    plt.close()
+    out = save_current_fig(name)
     print(f"Da luu {out}")
 
 
@@ -206,9 +229,7 @@ def menu_bug():
     plt.title("Che do LOI: co tham so -t nhung khong dung")
     plt.legend()
     plt.grid(True)
-    out = HERE / "speedup.png"
-    plt.savefig(out, dpi=150, bbox_inches="tight")
-    plt.close()
+    out = save_current_fig("speedup.png")
     print(f"Da luu bieu do duong phang tai {out}")
     print(f"Ban doan: {guess or '(khong tra loi)'}")
     print("Day chinh la loi cua ChatGPT-4 trong bao cao: co tham so nhung khong dung.\n")
@@ -223,8 +244,10 @@ def menu_image():
     if not src.exists():
         print("Chua co anh. Chay menu 1 truoc.\n")
         return
-    out = HERE / "mandel_view.png"
-    Image.open(src).save(out)
+    buf = io.BytesIO()
+    with Image.open(src) as img:
+        img.save(buf, format="PNG")
+    out = save_bytes_safe(HERE / "mandel_view.png", buf.getvalue())
     os.startfile(out)
     print(f"Da mo {out}\n")
 
@@ -252,7 +275,7 @@ def main():
             continue
         try:
             action[1]()
-        except (subprocess.CalledProcessError, RuntimeError, ValueError, ZeroDivisionError) as e:
+        except (subprocess.CalledProcessError, RuntimeError, ValueError, ZeroDivisionError, OSError) as e:
             print("Loi:", e, "\n")
 
 

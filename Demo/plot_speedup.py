@@ -1,3 +1,4 @@
+import io
 from pathlib import Path
 import re
 import sys
@@ -30,6 +31,22 @@ plt.ylabel("Speedup")
 plt.title("Mandelbrot: speedup theo so luong")
 plt.legend()
 plt.grid(True)
+buf = io.BytesIO()
+plt.savefig(buf, dpi=150, format="png")
+plt.close()
 out = HERE / "speedup.png"
-plt.savefig(out, dpi=150)
+try:
+    out.write_bytes(buf.getvalue())
+except OSError:
+    for idx in range(1, 100):
+        alt = HERE / f"speedup_{idx}.png"
+        try:
+            alt.write_bytes(buf.getvalue())
+            print(f"(Luu y: speedup.png dang mo trong ung dung khac, da luu sang {alt.name})")
+            out = alt
+            break
+        except OSError:
+            continue
+    else:
+        raise
 print(f"Da luu {out} (thoi gian tuan tu = {base:.4f} s)")
