@@ -1,15 +1,9 @@
-\documentclass[aspectratio=169,9pt]{beamer}
+\documentclass[aspectratio=169,10pt]{beamer}
 
-% ===================== NGÔN NGỮ & PHÔNG CHỮ (XeLaTeX) =====================
-\usepackage{fontspec}
-\setsansfont{Segoe UI}[
-  Scale=0.92,
-  BoldFont={Segoe UI Bold},
-  ItalicFont={Segoe UI Italic},
-  BoldItalicFont={Segoe UI Bold Italic}
-]
-\setmainfont{Segoe UI}[Scale=0.92]
-\setmonofont{Consolas}[Scale=0.82]
+% ===================== NGÔN NGỮ & PHÔNG CHỮ (pdfLaTeX --- Computer/Latin Modern Sans T5) =====================
+\usepackage[utf8]{inputenc}
+\usepackage[T5]{fontenc}
+\usepackage{lmodern}
 \usepackage[vietnamese,provide=*]{babel}
 
 % ===================== GÓI HỖ TRỢ =====================
@@ -62,14 +56,14 @@
 % Thanh tiêu đề slide 1 dòng chắc chắn, không bao giờ wrap/cắt đầu
 \setbeamertemplate{frametitle}{%
   \nointerlineskip
-  \begin{beamercolorbox}[wd=\paperwidth,ht=0.88cm,dp=0.14cm,leftskip=0.55cm,rightskip=0.55cm]{frametitle}%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=1.02cm,dp=0.16cm,leftskip=0.55cm,rightskip=0.55cm]{frametitle}%
     \makebox[\dimexpr\paperwidth-1.1cm\relax][s]{%
       {\bfseries\normalsize\color{Navy}\insertframetitle}\hfill
       {\scriptsize\color{Teal}\bfseries\currentpart}%
-    }\\[2pt]
+    }\\[3pt]
     {\color{BorderGray}\rule{\dimexpr\paperwidth-1.1cm\relax}{0.6pt}}%
   \end{beamercolorbox}%
-  \vspace{-0.15cm}
+  \vspace{-0.22cm}
 }
 
 % Chân trang 1 dòng gọn gàng + thanh tiến trình
@@ -82,7 +76,7 @@
   \end{tikzpicture}%
   \hbox{%
     \begin{beamercolorbox}[wd=0.56\paperwidth,ht=2.0ex,dp=1.0ex,leftskip=0.55cm]{author in head/foot}%
-      \tiny\color{Muted}Đánh giá mã C++ hiện đại \& MPI+OpenMP do LLM sinh — HUS
+      \tiny\color{Muted}Đánh giá mã C++ hiện đại \& MPI+OpenMP do LLM sinh --- HUS
     \end{beamercolorbox}%
     \begin{beamercolorbox}[wd=0.32\paperwidth,ht=2.0ex,dp=1.0ex,center]{title in head/foot}%
       \tiny\color{NavyLight}\currentpart
@@ -172,7 +166,7 @@
   % Đơn vị học thuật
   \node[anchor=north west,text=white] at ([xshift=2.22cm,yshift=-0.46cm]current page.north west) {%
     \begin{minipage}{12cm}
-      {\footnotesize\color{white!80}TRƯỜNG ĐẠI HỌC KHOA HỌC TỰ NHIÊN — KHOA TOÁN -- CƠ -- TIN HỌC}\\[2pt]
+      {\footnotesize\color{white!80}TRƯỜNG ĐẠI HỌC KHOA HỌC TỰ NHIÊN --- KHOA TOÁN -- CƠ -- TIN HỌC}\\[2pt]
       {\small\bfseries\color{Teal!40!white}BÁO CÁO BỘ MÔN TÍNH TOÁN SONG SONG}
     \end{minipage}
   };
@@ -227,7 +221,7 @@
 % ==========================================================================
 % SLIDE 2: BỐ CỤC 4 PHẦN THUYẾT TRÌNH
 % ==========================================================================
-\setpart{Mở đầu • Bố cục}
+\setpart{Mở đầu \textbullet{} Bố cục}
 \begin{frame}{Bố cục 4 phần thuyết trình}
 \begin{columns}[T,totalwidth=\textwidth]
   \begin{column}{0.485\textwidth}
@@ -251,7 +245,7 @@
   \end{column}
   \begin{column}{0.485\textwidth}
     \begin{navycard}{Phần 2 \;\textbullet\; Kiến trúc thực nghiệm \& Demo \hfill {\scriptsize Slide 7--10}}
-      \textbf{\footnotesize Nguyễn Quang Anh} {\scriptsize(\color{Muted}24001649 — Nhóm trưởng)}
+      \textbf{\footnotesize Nguyễn Quang Anh} {\scriptsize(\color{Muted}24001649 --- Nhóm trưởng)}
       \begin{itemize}\scriptsize\setlength{\itemsep}{1.5pt}
         \item Ma trận 4 LLM $\times$ 5 biến thể \& cụm \code{rostam} (20 lõi/nút).
         \item Bộ prompt P1--P3, quy trình 4 cổng \& độ đo \code{px/s}.
@@ -274,7 +268,7 @@
 % ==========================================================================
 % PHẦN 1: GIỚI THIỆU BÀI TOÁN (TRẦN LÝ DŨNG)
 % ==========================================================================
-\setpart{Phần 1 • Trần Lý Dũng}
+\setpart{Phần 1 \textbullet{} Trần Lý Dũng}
 
 % SLIDE 3: BỐI CẢNH & CÂU HỎI NGHIÊN CỨU
 \begin{frame}{Bối cảnh, vấn đề nghiên cứu \& 3 câu hỏi RQ}
@@ -290,17 +284,17 @@
   \end{column}
   \begin{column}{0.50\textwidth}
     {\footnotesize\bfseries\color{Navy}Ba câu hỏi nghiên cứu trọng tâm (RQ)}\vspace{3pt}
-    \begin{accentcard}{RQ1 — Tính đúng đắn \& lỗi thực thi}
+    \begin{accentcard}{RQ1 --- Tính đúng đắn \& lỗi thực thi}
       \scriptsize LLM sinh mã đúng đến mức nào qua 3 cổng \textbf{Biên dịch $\to$ Thực thi $\to$ Ảnh đầu ra}? Những lỗi đặc thù nào xuất hiện?
     \end{accentcard}
     \vspace{3pt}
     \begin{card}
-      {\footnotesize\bfseries\color{Navy}RQ2 — Khả năng mở rộng (Scaling)}\\[1pt]
+      {\footnotesize\bfseries\color{Navy}RQ2 --- Khả năng mở rộng (Scaling)}\\[1pt]
       \scriptsize Mã sau khi sửa tối thiểu có thực sự tôn trọng tham số luồng/nút và mở rộng tốt trên 1 nút (20 lõi) và nhiều nút (1--12 nút) không?
     \end{card}
     \vspace{3pt}
     \begin{card}
-      {\footnotesize\bfseries\color{Navy}RQ3 — So với mã con người \& chi phí}\\[1pt]
+      {\footnotesize\bfseries\color{Navy}RQ3 --- So với mã con người \& chi phí}\\[1pt]
       \scriptsize Hiệu năng và chất lượng/công sức (LOC, COCOMO) của mã LLM ra sao khi đặt cạnh mã chuẩn sách \emph{Parallel C++}?
     \end{card}
   \end{column}
@@ -314,7 +308,7 @@
     \begin{card}
       {\footnotesize\bfseries\color{Navy}Định nghĩa thuật toán thoát (\emph{escape-time})}\\[4pt]
       \centering $z_0 = 0, \qquad z_{k+1} = z_k^2 + c \quad (c = c_r + i c_i)$\\[4pt]
-      \raggedright\scriptsize Dừng khi $|z_k| > 2$ (ngoài tập) hoặc chạm $I_{\max} = 1000$ vòng (trong tập — vùng đen đặc).
+      \raggedright\scriptsize Dừng khi $|z_k| > 2$ (ngoài tập) hoặc chạm $I_{\max} = 1000$ vòng (trong tập --- vùng đen đặc).
     \end{card}
     \vspace{4pt}
     \begin{itemize}\footnotesize\setlength{\itemsep}{3pt}
@@ -326,9 +320,9 @@
   \begin{column}{0.47\textwidth}
     \centering
     \includegraphics[width=0.77\linewidth]{mandelbrot_coroutine.png}\\[-2pt]
-    {\tiny\color{Muted}(a) ChatGPT-5 — C++20 Coroutines ($1920\times 1080$)}\\[3pt]
+    {\tiny\color{Muted}(a) ChatGPT-5 --- C++20 Coroutines ($1920\times 1080$)}\\[3pt]
     \includegraphics[width=0.77\linewidth]{mandelbrot_mpi.jpg}\\[-2pt]
-    {\tiny\color{Muted}(b) ChatGPT-5 — MPI+OpenMP (khác bảng màu dù cùng LLM!)}
+    {\tiny\color{Muted}(b) ChatGPT-5 --- MPI+OpenMP (khác bảng màu dù cùng LLM!)}
   \end{column}
 \end{columns}
 \end{frame}
@@ -386,13 +380,13 @@ MPI + OpenMP & Phân tán (N nút) & Chia phân vùng theo \code{-p} + OpenMP tr
 % ==========================================================================
 % PHẦN 2: KIẾN TRÚC THỰC NGHIỆM & DEMO (NGUYỄN QUANG ANH)
 % ==========================================================================
-\setpart{Phần 2 • Nguyễn Quang Anh}
+\setpart{Phần 2 \textbullet{} Nguyễn Quang Anh}
 
 % SLIDE 7: MA TRẬN THỰC NGHIỆM & HẠ TẦNG ĐO
 \begin{frame}{Ma trận thực nghiệm (4 LLM $\times$ 5 biến thể) \& Hạ tầng đo}
 \begin{columns}[T,totalwidth=\textwidth]
   \begin{column}{0.51\textwidth}
-    {\footnotesize\bfseries\color{Navy}Ma trận 20 chương trình (Bảng 4 — zero-shot 1 lần sinh)}\vspace{3pt}
+    {\footnotesize\bfseries\color{Navy}Ma trận 20 chương trình (Bảng 4 --- zero-shot 1 lần sinh)}\vspace{3pt}
     \scriptsize
     \renewcommand{\arraystretch}{1.22}
     \begin{tabular}{@{}lcccc@{}}
@@ -413,7 +407,7 @@ MPI + OpenMP & Phân tán (N nút) & Chia phân vùng theo \code{-p} + OpenMP tr
     \end{card}
   \end{column}
   \begin{column}{0.46\textwidth}
-    \begin{navycard}{Cụm HPC \code{rostam} — ĐH LSU (Bảng 5)}
+    \begin{navycard}{Cụm HPC \code{rostam} --- ĐH LSU (Bảng 5)}
       \begin{itemize}\scriptsize\setlength{\itemsep}{2.5pt}
         \item \textbf{Phần cứng:} phân vùng \code{medusa}, 16 nút; mỗi nút 1 CPU Intel Xeon Gold 6148 (\textbf{20 lõi}, 2.40\,GHz), 92\,GB RAM.
         \item \textbf{Toolchain:} GCC 11.5.0, Intel TBB 2022.2, OpenMPI 5.0.7.
@@ -431,22 +425,22 @@ MPI + OpenMP & Phân tán (N nút) & Chia phân vùng theo \code{-p} + OpenMP tr
 
 % SLIDE 8: THIẾT KẾ BỘ PROMPT P1, P2, P3
 \begin{frame}{Thiết kế bộ prompt nguyên văn P1, P2, P3}
-\begin{card}[leftrule=2.5pt,colframe=Navy,top=3pt,bottom=3pt]
-  \pill{Navy}{P1} \;\textbf{\footnotesize C++ hiện đại (C++11 async / C++17 par\_algo / C++20 coroutines)}\\[1.5pt]
+\begin{card}[leftrule=2.5pt,colframe=Navy,top=2.5pt,bottom=2.5pt]
+  \pill{Navy}{P1} \;\textbf{\footnotesize C++ hiện đại (C++11 async / C++17 par\_algo / C++20 coroutines)}\\[1pt]
   \scriptsize\ttfamily "Write a parallel code for the Mandelbrot set using C++ \{11 async future, 17 parallel algorithms, 20 coroutines\} and write the output to the PBM format. Make the number of threads configurable with the command line option -t and print the runtime excluding IO."
 \end{card}
-\vspace{3pt}
-\begin{card}[leftrule=2.5pt,colframe=Teal,top=3pt,bottom=3pt]
-  \pill{Teal}{P2} \;\textbf{\footnotesize OpenMP (Bộ nhớ chia sẻ)}\\[1.5pt]
+\vspace{1.5pt}
+\begin{card}[leftrule=2.5pt,colframe=Teal,top=2.5pt,bottom=2.5pt]
+  \pill{Teal}{P2} \;\textbf{\footnotesize OpenMP (Bộ nhớ chia sẻ)}\\[1pt]
   \scriptsize\ttfamily "Write a parallel code for the Mandelbrot set using C++ using OpenMP and write the output to the PBM format. Make the number of threads configurable with the command line option -t and print the runtime excluding IO."
 \end{card}
-\vspace{3pt}
-\begin{card}[leftrule=2.5pt,colframe=NavyLight,top=3pt,bottom=3pt]
-  \pill{NavyLight}{P3} \;\textbf{\footnotesize MPI + OpenMP (Bộ nhớ phân tán)}\\[1.5pt]
+\vspace{1.5pt}
+\begin{card}[leftrule=2.5pt,colframe=NavyLight,top=2.5pt,bottom=2.5pt]
+  \pill{NavyLight}{P3} \;\textbf{\footnotesize MPI + OpenMP (Bộ nhớ phân tán)}\\[1pt]
   \scriptsize\ttfamily "Write a distributed code using MPI for the Mandelbrot set and using OpenMP for parallelism in C++ and write the output to the PBM format. Make the number of partitions configurable with the command line option -p and print the runtime excluding IO."
 \end{card}
-\vspace{3pt}
-\begin{warncard}[top=3pt,bottom=3pt]{Hai lưu ý quan trọng về thiết kế prompt}
+\vspace{1.5pt}
+\begin{warncard}[top=2.5pt,bottom=2.5pt]{Hai lưu ý quan trọng về thiết kế prompt}
   \scriptsize
   \textbf{1. Bắt buộc thêm \code{-p} ở P3:} nếu không yêu cầu số phân vùng, LLM sinh mã để \emph{mọi rank MPI tự tính lại nguyên cả bức ảnh}!\\[1.5pt]
   \textbf{2. Không cố định tọa độ phức \& độ phân giải:} mỗi LLM tự chọn khung nhìn/cắt tỉa khác nhau $\implies$ gây chênh lệch thông lượng tuyệt đối ở Phần 4.
@@ -504,15 +498,15 @@ MPI + OpenMP & Phân tán (N nút) & Chia phân vùng theo \code{-p} + OpenMP tr
   \begin{column}{0.57\textwidth}
     {\footnotesize\bfseries\color{Navy}Trình tự 4 thao tác demo tương tác tại lớp}\vspace{3pt}
     \begin{card}[leftrule=2.5pt,colframe=Navy,top=3pt,bottom=3pt]
-      \scriptsize \textbf{1. Menu 1 — Tuần tự vs OpenMP:} ảnh $800\times 600$, 300 vòng, 8 luồng; chạy lặp 3 lần lấy trung bình (loại I/O) $\to$ thấy tăng tốc rõ rệt.
+      \scriptsize \textbf{1. Menu 1 --- Tuần tự vs OpenMP:} ảnh $800\times 600$, 300 vòng, 8 luồng; chạy lặp 3 lần lấy trung bình (loại I/O) $\to$ thấy tăng tốc rõ rệt.
     \end{card}\vspace{2.5pt}
     \begin{card}[leftrule=2.5pt,colframe=Teal,top=3pt,bottom=3pt]
-      \scriptsize \textbf{2. Menu 5 — Mở ảnh kết quả:} đổi \code{.pgm $\to$ .png}, xác minh bản tuần tự và OpenMP cho ảnh Mandelbrot giống hệt nhau.
+      \scriptsize \textbf{2. Menu 5 --- Mở ảnh kết quả:} đổi \code{.pgm $\to$ .png}, xác minh bản tuần tự và OpenMP cho ảnh Mandelbrot giống hệt nhau.
     \end{card}\vspace{2.5pt}
     \begin{card}[leftrule=2.5pt,colframe=Amber,top=3pt,bottom=3pt]
-      \scriptsize \textbf{3. Menu 3 — So sánh \code{static} / \code{dynamic} / \code{guided}:} minh họa mất cân bằng tải tự nhiên ($400\times 300$, 1000 vòng) $\to$ \code{dynamic} thắng \code{static}.
+      \scriptsize \textbf{3. Menu 3 --- So sánh \code{static} / \code{dynamic} / \code{guided}:} minh họa mất cân bằng tải tự nhiên ($400\times 300$, 1000 vòng) $\to$ \code{dynamic} thắng \code{static}.
     \end{card}\vspace{2.5pt}
-    \begin{alertcard}[top=3pt,bottom=3pt]{4. Menu 4 — Chế độ LỖI: \code{--ignore-t} (Khoảnh khắc ``a-ha'')}
+    \begin{alertcard}[top=3pt,bottom=3pt]{4. Menu 4 --- Chế độ LỖI: \code{--ignore-t} (Khoảnh khắc ``a-ha'')}
       \scriptsize Cố tình bỏ qua \code{-t} (luôn dùng toàn bộ 12 luồng) $\to$ vẽ \textbf{đường speedup phẳng ngang}, tái hiện đúng lỗi của ChatGPT-4!
     \end{alertcard}
   \end{column}
@@ -541,7 +535,7 @@ python interactive.py
 % ==========================================================================
 % PHẦN 3: PHÂN TÍCH LỖI THỰC TẾ (ĐỒNG ĐỨC DƯƠNG)
 % ==========================================================================
-\setpart{Phần 3 • Đồng Đức Dương}
+\setpart{Phần 3 \textbullet{} Đồng Đức Dương}
 
 % SLIDE 11: TỈ LỆ THÀNH CÔNG (BẢNG 6)
 \begin{frame}{Tổng quan tỉ lệ thành công: Hố ngăn cách Build vs Run}
@@ -586,14 +580,14 @@ Tính đúng (\emph{Ảnh})   & \ok{100\% (5/5)} & \ok{100\% (5/5)} & \ok{100\% 
 \begin{frame}[fragile]{Các lỗi thực tế tiêu biểu theo từng mô hình (Bảng 7)}
 \begin{columns}[T,totalwidth=\textwidth]
   \begin{column}{0.49\textwidth}
-    \begin{warncard}[top=3pt,bottom=3pt]{ChatGPT-4 — Giao diện giả \& Nhầm backend}
+    \begin{warncard}[top=3pt,bottom=3pt]{ChatGPT-4 --- Giao diện giả \& Nhầm backend}
       \begin{itemize}\scriptsize\setlength{\itemsep}{1.5pt}
         \item \textbf{CLI (4/4 chia sẻ):} in hướng dẫn đủ tham số nhưng \emph{chỉ parse \code{-t}}, bỏ qua kích thước ảnh/tọa độ.
         \item \textbf{C++17 \code{par\_algo}:} đặt \code{OPENMP\_NUM\_THREADS} dù GCC dùng \textbf{Intel TBB} $\implies$ luôn chạy 20 lõi! Phải sửa sang \code{tbb::global\_control}.
       \end{itemize}
     \end{warncard}
     \vspace{3pt}
-    \begin{alertcard}[top=3pt,bottom=3pt]{Claude — Treo Coroutine \& ``Comment thay code''}
+    \begin{alertcard}[top=3pt,bottom=3pt]{Claude --- Treo Coroutine \& ``Comment thay code''}
       \scriptsize \textbullet\;\textbf{Coroutine:} treo vô hạn vì \code{final\_suspend = suspend\_never} khiến \code{done()} không bao giờ trả về \code{true}:
 \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
 while (!tasks[i].done()) // treo mai mai!
@@ -604,7 +598,7 @@ while (!tasks[i].done()) // treo mai mai!
     \end{alertcard}
   \end{column}
   \begin{column}{0.49\textwidth}
-    \begin{alertcard}[top=3pt,bottom=3pt]{LLaMA — Chuỗi lỗi chồng chất ở mọi tầng}
+    \begin{alertcard}[top=3pt,bottom=3pt]{LLaMA --- Chuỗi lỗi chồng chất ở mọi tầng}
       \begin{itemize}\scriptsize\setlength{\itemsep}{2pt}
         \item \textbf{Biên dịch:} sai \code{std::distance(iterator, Pixel*)}; biến \code{execution\_policy\_tag} chưa khai báo; thiếu \code{return\_void()}.
         \item \textbf{Segfault (Coroutine):} \code{suspend\_never} và destructor cùng giải phóng 1 tác vụ $\implies$ \bad{double-free}.
@@ -613,7 +607,7 @@ while (!tasks[i].done()) // treo mai mai!
       \end{itemize}
     \end{alertcard}
     \vspace{3pt}
-    \begin{accentcard}[top=3pt,bottom=3pt]{ChatGPT-5 — Không gặp lỗi biên dịch / thực thi}
+    \begin{accentcard}[top=3pt,bottom=3pt]{ChatGPT-5 --- Không gặp lỗi biên dịch / thực thi}
       \scriptsize Parse đủ CLI, gọi đúng \code{tbb::global\_control}, xuất ảnh P4/P5 hợp lệ trên cả 5 biến thể (khác bảng màu giữa chia sẻ và MPI).
     \end{accentcard}
   \end{column}
@@ -654,7 +648,7 @@ while (!tasks[i].done()) // treo mai mai!
       \scriptsize
       \begin{itemize}\setlength{\itemsep}{2pt}
         \item Backend của GCC (\code{libstdc++} $\to$ TBB), hợp đồng trạng thái coroutine, kích thước đệm \code{MPI\_Gatherv}, mốc timer.
-        \item \bad{Điểm yếu cốt lõi của LLM} — đây là nơi lỗi ``âm thầm'' xuất hiện dù biên dịch 100\%.
+        \item \bad{Điểm yếu cốt lõi của LLM} --- đây là nơi lỗi ``âm thầm'' xuất hiện dù biên dịch 100\%.
       \end{itemize}
     \end{alertcard}
   \end{column}
@@ -698,7 +692,7 @@ while (!tasks[i].done()) // treo mai mai!
 % ==========================================================================
 % PHẦN 4: HIỆU NĂNG & TỔNG KẾT (NGUYỄN NHƯ BẢO)
 % ==========================================================================
-\setpart{Phần 4 • Nguyễn Như Bảo}
+\setpart{Phần 4 \textbullet{} Nguyễn Như Bảo}
 
 % SLIDE 15: MỞ RỘNG TRÊN 1 NÚT (HÌNH 5)
 \begin{frame}{Khả năng mở rộng trên 1 nút (1--20 lõi, \code{pixel updates/s})}
@@ -805,8 +799,8 @@ while (!tasks[i].done()) // treo mai mai!
 % SLIDE 18: THÔNG LƯỢNG GEMINI 4 CÙNG HỆ QUY CHIẾU (HÌNH 8)
 \begin{frame}{Mở rộng 1 nút của Gemini 4 theo hệ quy chiếu \code{pixel updates/s}}
 \centering
-\includegraphics[width=0.77\textwidth]{fig_gemini4_scaling.png}\\[-2pt]
-{\tiny\color{Muted}Hình 8: Thông lượng ($\times 10^7$ px/s — cùng hệ quy chiếu Hình 5) và tăng tốc tương đối trên 12 luồng cục bộ (trung bình 3 lần đo, loại I/O).}
+\includegraphics[width=0.72\textwidth]{fig_gemini4_scaling.png}\\[-2pt]
+{\tiny\color{Muted}Hình 8: Thông lượng ($\times 10^7$ px/s --- cùng hệ quy chiếu Hình 5) và tăng tốc tương đối trên 12 luồng cục bộ (trung bình 3 lần đo, loại I/O).}
 
 \vspace{0.18cm}
 \begin{columns}[T,totalwidth=\textwidth]

@@ -6,11 +6,11 @@ Thư mục này chứa toàn bộ tài liệu hướng dẫn, dàn ý 20 slide, 
 > **Xem nhanh dàn ý chi tiết từng slide (Slide 1 – Slide 20):** [`outline-slides.md`](outline-slides.md)
 
 ### Biên dịch lại slide (nếu chỉnh sửa `slides.tex`)
-Chạy XeLaTeX **2 lượt** từ bên trong thư mục `Slides/` (để số tổng trang `X/20` và thanh tiến trình khớp):
+Chạy pdfLaTeX **2 lượt** từ bên trong thư mục `Slides/` (dùng phông Latin Modern Sans T5 chuẩn Beamer tiếng Việt, để số tổng trang `X/20` và thanh tiến trình khớp):
 ```powershell
 cd Slides
-xelatex -interaction=nonstopmode slides.tex
-xelatex -interaction=nonstopmode slides.tex
+pdflatex -interaction=nonstopmode slides.tex
+pdflatex -interaction=nonstopmode slides.tex
 ```
 *(Sau khi biên dịch, đổi tên `slides.pdf` thành `Slide-LLM-HPC-Mandelbrot.pdf`.)*
 
