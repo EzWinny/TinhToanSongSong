@@ -1,9 +1,9 @@
 # Giải thích nhanh: Lập lịch OpenMP (`static` / `dynamic` / `guided`)
 
 > **Phục vụ cho:**
-> - **Phần 1 — Slide 4** (Mất cân bằng tải tự nhiên trên tập Mandelbrot) — Trần Lý Dũng
-> - **Phần 2 — Slide 10** (Demo `Menu 3` so sánh `static` / `dynamic` / `guided` trên `Demo/interactive.py`) — Nguyễn Quang Anh
-> - **Phần 4 — Slide 16** (Giải thích vì sao cả 4 LLM chững ở $2 \to 4$ nút MPI do chia dải tĩnh) — Nguyễn Như Bảo
+> - **Phần 1 — Slide 5** (Mất cân bằng tải tự nhiên trên tập Mandelbrot) — Trần Lý Dũng
+> - **Phần 2 — Slide 11** (Demo `Menu 3` so sánh `static` / `dynamic` / `guided` trên `Demo/interactive.py`) — Nguyễn Quang Anh
+> - **Phần 4 — Slide 18** (Giải thích vì sao cả 4 LLM chững ở $2 \to 4$ nút MPI do chia dải tĩnh) — Nguyễn Như Bảo
 > - **Hỏi – Đáp (Q&A):** Khi giảng viên hỏi sâu về lập lịch OpenMP và tham số `chunk`.
 
 ---

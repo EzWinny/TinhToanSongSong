@@ -1,16 +1,16 @@
 # Ghi chú thuyết trình — Phần 2: 5 mô hình song song, Kiến trúc thực nghiệm & Demo
 
-- **Phục vụ cho đoạn:** **Phần 2 • 5 mô hình, Thực nghiệm & Demo** *(Slide 5–10, kèm minh họa demo trực tiếp, dự kiến ~7–8 phút)*
+- **Phục vụ cho đoạn:** **Phần 2 • 5 mô hình, Thực nghiệm & Demo** *(Slide 6–11, kèm minh họa demo trực tiếp, dự kiến ~7–8 phút)*
 - **Người thuyết trình phụ trách:** Nguyễn Quang Anh (`24001649` — Trưởng nhóm)
 - **Kịch bản lời nói đầy đủ + Giải thích OpenMP, MPI & 5 biến thể:** [`02b-kich-ban-noi-quang-anh.md`](02b-kich-ban-noi-quang-anh.md)
 - **Tài liệu báo cáo tương ứng:** Mục 2.2–2.7 (*C++ hiện đại & 5 mô hình song song*), Phần 3 (*Phương pháp đánh giá*, Mục 3.1–3.7) trong `Report/Bao-cao-LLM-HPC-Mandelbrot*.pdf` và thư mục `Demo/` (`Demo/interactive.py`, `Demo/PLAN.md`, `Demo/eval_llm.py`)
 - **Tệp hình ảnh / bảng / công cụ sử dụng:**
-  - `Report/figures/fig_timeline.png` *(Hình 2 — Slide 5)*
-  - Tóm tắt **Bảng 2** (*So sánh các cơ chế song song trong C++, OpenMP, MPI+OpenMP* — Slide 6)
-  - **Bảng 4** (*Ma trận thực nghiệm: 4 LLM × 5 biến thể = 20 chương trình* — Slide 7)
-  - **Bảng 5** (*Cấu hình cụm `rostam` của bài báo gốc* — Slide 7)
-  - 3 prompt nguyên văn **P1, P2, P3** (Mục 3.3 — Slide 8)
-  - Bộ demo tương tác: `Demo/interactive.py` (dự phòng: `Demo/run_demo.bat` — Slide 10)
+  - `Report/figures/fig_timeline.png` *(Hình 2 — Slide 6)*
+  - Tóm tắt **Bảng 2** (*So sánh các cơ chế song song trong C++, OpenMP, MPI+OpenMP* — Slide 7)
+  - **Bảng 4** (*Ma trận thực nghiệm: 4 LLM × 5 biến thể = 20 chương trình* — Slide 8)
+  - **Bảng 5** (*Cấu hình cụm `rostam` của bài báo gốc* — Slide 8)
+  - 3 prompt nguyên văn **P1, P2, P3** (Mục 3.3 — Slide 9)
+  - Bộ demo tương tác: `Demo/interactive.py` (dự phòng: `Demo/run_demo.bat` — Slide 11)
 
 ---
 

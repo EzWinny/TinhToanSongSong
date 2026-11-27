@@ -1,8 +1,8 @@
 # Kịch bản lời nói & Giải thích kỹ thuật — Phần 2 (Nguyễn Quang Anh)
 
 - **Người thuyết trình:** Nguyễn Quang Anh (`24001649` — Trưởng nhóm)
-- **Phạm vi trình bày:** **Slide 5 – Slide 10** *(Tiến hóa C++, 5 mô hình song song, Ma trận thực nghiệm, Prompt P1–P3, Quy trình 4 cổng & Demo trực tiếp)*
-- **Tổng thời lượng dự kiến:** **~7–8 phút** *(Slide 5–9: ~4,5 phút | Demo trực tiếp Slide 10: ~2,5–3 phút)*
+- **Phạm vi trình bày:** **Slide 6 – Slide 11** *(Tiến hóa C++, 5 mô hình song song, Ma trận thực nghiệm, Prompt P1–P3, Quy trình 4 cổng & Demo trực tiếp)*
+- **Tổng thời lượng dự kiến:** **~7–8 phút** *(Slide 6–10: ~4,5 phút | Demo trực tiếp Slide 11: ~2,5–3 phút)*
 - **Tài liệu đi kèm:** [`02-phan-2-kien-truc-thuc-nghiem-va-demo.md`](02-phan-2-kien-truc-thuc-nghiem-va-demo.md) · [`06-giai-thich-lap-lich-openmp.md`](06-giai-thich-lap-lich-openmp.md)
 
 ---

@@ -63,8 +63,8 @@
   - Bản mở rộng có Gemini 4 (52 trang): `Report/Bao-cao-LLM-HPC-Mandelbrot-bo-sung-Gemini4.pdf`
 - [ ] Mở sẵn PowerShell ở `Demo/`, chạy `deactivate` nếu thấy `(.venv)`, test nhanh `python interactive.py` (Menu 1 & 4) và đóng trình xem ảnh `speedup.png` / `mandel_view.png`.
 - [ ] Để sẵn `Demo/run_demo.bat` làm phương án dự phòng nếu thiếu thời gian.
-- [ ] Thống nhất thời lượng từng người (tổng ~21–24 phút + Q&A):
-  - **Phần 1 (Dũng — Slide 1–4):** ~3–3,5 phút
-  - **Phần 2 + Demo (Quang Anh — Slide 5–10):** ~7–8 phút
-  - **Phần 3 (Dương — Slide 11–14):** ~5–6 phút
-  - **Phần 4 (Bảo — Slide 15–20):** ~6–7 phút
+- [ ] Thống nhất thời lượng từng người (tổng ~22–25 phút + Q&A):
+  - **Phần 1 (Dũng — Slide 1–5):** ~4–4,5 phút
+  - **Phần 2 + Demo (Quang Anh — Slide 6–11):** ~7–8 phút
+  - **Phần 3 (Dương — Slide 12–16):** ~5–6 phút
+  - **Phần 4 (Bảo — Slide 17–22):** ~6–7 phút
