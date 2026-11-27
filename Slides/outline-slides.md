@@ -1,6 +1,6 @@
 # Dàn ý chia báo cáo thành 4 phần thuyết trình (20 Slide)
 
-Tài liệu này chia toàn bộ nội dung báo cáo (`Report/Bao-cao-LLM-HPC-Mandelbrot*.pdf`, 50–53 trang) thành **4 phần thuyết trình cân đối (~20 slide, tổng ~20–24 phút + Q&A)**, bám sát phân công 4 thành viên và liên kết thẳng tới các file chú thích chi tiết trong `Slides/notes/`.
+Tài liệu này chia toàn bộ nội dung báo cáo (`Report/Bao-cao-LLM-HPC-Mandelbrot*.pdf`, 49–52 trang) thành **4 phần thuyết trình cân đối (~20 slide, tổng ~21–24 phút + Q&A)**, bám sát phân công 4 thành viên và liên kết thẳng tới các file chú thích chi tiết trong `Slides/notes/`.
 
 ---
 
@@ -9,8 +9,8 @@ Tài liệu này chia toàn bộ nội dung báo cáo (`Report/Bao-cao-LLM-HPC-M
 | Phần thuyết trình | Slide | Thời lượng | Người trình bày (MSSV) | Phạm vi tương ứng trong báo cáo | File chú thích chi tiết |
 |---|---|---|---|---|---|
 | **Mở đầu chung** | 1 – 2 | ~0,5 phút | Trần Lý Dũng (`24001658`) | Trang bìa & Bảng 1 (Phân công) | — |
-| **Phần 1 • Giới thiệu bài toán** | 3 – 6 | ~4–5 phút | Trần Lý Dũng (`24001658`) | Phần 1 (*1.1–1.6*) + Phần 2 (*2.1–2.7*) | [`notes/01-phan-1-gioi-thieu-bai-toan.md`](notes/01-phan-1-gioi-thieu-bai-toan.md) |
-| **Phần 2 • Kiến trúc thực nghiệm & Demo** | 7 – 10 | ~5–6 phút | Nguyễn Quang Anh (`24001649`) | Phần 3 (*3.1–3.7*) + `Demo/` | [`notes/02-phan-2-kien-truc-thuc-nghiem-va-demo.md`](notes/02-phan-2-kien-truc-thuc-nghiem-va-demo.md) |
+| **Phần 1 • Giới thiệu bài toán** | 3 – 4 | ~3–3,5 phút | Trần Lý Dũng (`24001658`) | Phần 1 (*1.1–1.6*) + Mục 2.1 (*Tập Mandelbrot*) | [`notes/01-phan-1-gioi-thieu-bai-toan.md`](notes/01-phan-1-gioi-thieu-bai-toan.md) |
+| **Phần 2 • 5 mô hình, Thực nghiệm & Demo** | 5 – 10 | ~7–8 phút | Nguyễn Quang Anh (`24001649`) | Mục 2.2–2.7 (*C++ & 5 mô hình*) + Phần 3 (*3.1–3.7*) + `Demo/` | [`notes/02-phan-2-kien-truc-thuc-nghiem-va-demo.md`](notes/02-phan-2-kien-truc-thuc-nghiem-va-demo.md) |
 | **Phần 3 • Phân tích lỗi thực tế** | 11 – 14 | ~5–6 phút | Đồng Đức Dương (`24001659`) | Phần 4 (*4.1–4.5*) + Phần 5 (*5.1–5.5*) | [`notes/03-phan-3-phan-tich-loi-thuc-te.md`](notes/03-phan-3-phan-tich-loi-thuc-te.md) |
 | **Phần 4 • Hiệu năng & tổng kết** | 15 – 20 | ~6–7 phút | Nguyễn Như Bảo (`24001655`) | Phần 4 (*4.6–4.9*) + Phần 5 (*5.6–5.7*) + Phần 6 (*6.1–6.4*) | [`notes/04-phan-4-hieu-nang-va-tong-ket.md`](notes/04-phan-4-hieu-nang-va-tong-ket.md) |
 | **Hỏi – Đáp (Q&A)** | 20 | ~5–10 phút | **Cả 4 thành viên** | Phụ lục C + toàn bộ báo cáo | [`notes/05-qa-phan-bien-va-luu-y-chung.md`](notes/05-qa-phan-bien-va-luu-y-chung.md) |
@@ -26,7 +26,7 @@ Tài liệu này chia toàn bộ nội dung báo cáo (`Report/Bao-cao-LLM-HPC-M
 
 ---
 
-## Phần 1 • Giới thiệu bài toán *(Slide 3 – 6 | Trần Lý Dũng)*
+## Phần 1 • Giới thiệu bài toán *(Slide 3 – 4 | Trần Lý Dũng)*
 
 > Xem giải thích chi tiết từng hình & lời dẫn tại [`notes/01-phan-1-gioi-thieu-bai-toan.md`](notes/01-phan-1-gioi-thieu-bai-toan.md).
 
@@ -34,17 +34,17 @@ Tài liệu này chia toàn bộ nội dung báo cáo (`Report/Bao-cao-LLM-HPC-M
 |---|---|---|---|
 | **Slide 3** | Bối cảnh & Câu hỏi nghiên cứu | Khoảng cách giữa *"biên dịch được"* và *"chạy đúng, mở rộng được"* trong HPC; 3 câu hỏi nghiên cứu (RQ1–RQ3); vị trí bài báo Diehl et al. (2025/2026) so với các công trình trước (tóm gọn Mục 2.6). | Khung 3 câu hỏi RQ |
 | **Slide 4** | Bài toán tập Mandelbrot | Công thức lặp $z_{k+1}=z_k^2+c$; tính *song song hiển nhiên* nhưng **mất cân bằng tải tự nhiên** (vùng đen chạm 1000 vòng, nền ngoài thoát sau 1–3 vòng); định dạng ảnh PBM/PGM không cần thư viện ngoài. | **Hình 1** (`Report/figures/mandelbrot_coroutine.png`, `mandelbrot_mpi.jpg`) |
-| **Slide 5** | Song song hóa trong C++ hiện đại | Sự tiến hóa chuẩn C++11 (`std::async`) → C++17 (`std::execution::par`) → C++20 (`coroutines`, `latch`/`barrier`); tính năng càng mới dữ liệu huấn luyện càng ít. | **Hình 2** (`Report/figures/fig_timeline.png`) |
-| **Slide 6** | 5 mô hình song song được đánh giá | Tóm tắt cơ chế, cách chỉnh số luồng/phân vùng và điểm dễ sai của 4 biến thể bộ nhớ chia sẻ (C++11, C++17, C++20, OpenMP) + 1 biến thể phân tán (MPI+OpenMP). | Tóm tắt **Bảng 2** (5 dòng ngắn) |
 
 ---
 
-## Phần 2 • Kiến trúc thực nghiệm & Demo *(Slide 7 – 10 | Nguyễn Quang Anh)*
+## Phần 2 • 5 mô hình, Kiến trúc thực nghiệm & Demo *(Slide 5 – 10 | Nguyễn Quang Anh)*
 
 > Xem giải thích chi tiết & kịch bản lệnh chạy demo tại [`notes/02-phan-2-kien-truc-thuc-nghiem-va-demo.md`](notes/02-phan-2-kien-truc-thuc-nghiem-va-demo.md).
 
 | Slide | Tiêu đề slide | Nội dung chính cô đọng | Hình / Bảng đưa lên slide |
 |---|---|---|---|
+| **Slide 5** | Song song hóa trong C++ hiện đại | Sự tiến hóa chuẩn C++11 (`std::async`) → C++17 (`std::execution::par`) → C++20 (`coroutines`, `latch`/`barrier`); tính năng càng mới dữ liệu huấn luyện càng ít. | **Hình 2** (`Report/figures/fig_timeline.png`) |
+| **Slide 6** | 5 mô hình song song được đánh giá | Tóm tắt cơ chế, cách chỉnh số luồng/phân vùng và điểm dễ sai của 4 biến thể bộ nhớ chia sẻ (C++11, C++17, C++20, OpenMP) + 1 biến thể phân tán (MPI+OpenMP). | Tóm tắt **Bảng 2** (5 dòng ngắn) |
 | **Slide 7** | Ma trận thực nghiệm & Hạ tầng đo | 4 LLM (ChatGPT-5, ChatGPT-4, Claude, LLaMA) × 5 biến thể = **20 chương trình** (zero-shot 1 lần sinh); cụm `rostam` (Xeon Gold 6148, 20 lõi/nút, GCC 11.5, Intel TBB 2022.2, OpenMPI 5.0.7). | **Bảng 4** & tóm tắt **Bảng 5** |
 | **Slide 8** | Thiết kế bộ prompt P1, P2, P3 | Trích ngắn gọn P1 (C++11/17/20), P2 (OpenMP), P3 (MPI+OpenMP); nhấn **2 chi tiết sống còn**: P3 bắt buộc có cờ `-p` (tránh mọi rank tính lặp cả ảnh) và prompt **không cố định tọa độ/độ phân giải**. | Khung 3 prompt P1–P3 |
 | **Slide 9** | Quy trình kiểm định & Độ đo | 4 cổng kiểm định (Build → Run → Kiểm tra ảnh → LOC/COCOMO/Scaling); công thức thông lượng `pixel updates per second` = $(W\cdot H)/T_{\text{compute}}$ **loại trừ I/O**; giới hạn so sánh với máy local (12 luồng, không có TBB/MPI). | Sơ đồ 4 bước + công thức Throughput |

@@ -8,8 +8,8 @@
 ## 1. Phân vai trả lời nhanh khi giảng viên đặt câu hỏi
 | Nhóm câu hỏi | Người chính trả lời | Người hỗ trợ |
 |---|---|---|
-| Lý thuyết Mandelbrot, 5 cơ chế C++/OpenMP/MPI, định dạng PBM/PGM | **Trần Lý Dũng** *(Phần 1)* | Nguyễn Quang Anh |
-| Thiết kế prompt P1–P3, môi trường `rostam`, Demo `interactive.py` & `eval_llm.py` | **Nguyễn Quang Anh** *(Phần 2)* | Nguyễn Như Bảo |
+| Bối cảnh, khoảng trống nghiên cứu, tập Mandelbrot, định dạng PBM/PGM | **Trần Lý Dũng** *(Phần 1)* | Nguyễn Quang Anh |
+| Tiến hóa C++11/17/20, 5 cơ chế song song, prompt P1–P3, cụm `rostam`, Demo `interactive.py` & `eval_llm.py` | **Nguyễn Quang Anh** *(Phần 2)* | Nguyễn Như Bảo |
 | Chi tiết lỗi ChatGPT-4/5, Claude, LLaMA, 6 điểm lệch số liệu, LOC/COCOMO | **Đồng Đức Dương** *(Phần 3)* | Nguyễn Quang Anh |
 | Đọc đồ thị Hình 5/6/8, `pixel updates/s`, so sánh mã con người, Gemini 4, khuyến nghị | **Nguyễn Như Bảo** *(Phần 4)* | Nguyễn Quang Anh |
 
@@ -59,12 +59,12 @@
 
 ## 3. Checklist 5 phút trước giờ thuyết trình
 - [ ] Kiểm tra 2 file PDF thành phẩm đã mở sẵn (hoặc chọn sẵn bản nộp):
-  - Bản gốc (50 trang): `Report/Bao-cao-LLM-HPC-Mandelbrot.pdf`
-  - Bản mở rộng có Gemini 4 (53 trang): `Report/Bao-cao-LLM-HPC-Mandelbrot-bo-sung-Gemini4.pdf`
+  - Bản gốc (49 trang): `Report/Bao-cao-LLM-HPC-Mandelbrot.pdf`
+  - Bản mở rộng có Gemini 4 (52 trang): `Report/Bao-cao-LLM-HPC-Mandelbrot-bo-sung-Gemini4.pdf`
 - [ ] Mở sẵn PowerShell ở `Demo/`, chạy `deactivate` nếu thấy `(.venv)`, test nhanh `python interactive.py` (Menu 1 & 4) và đóng trình xem ảnh `speedup.png` / `mandel_view.png`.
 - [ ] Để sẵn `Demo/run_demo.bat` làm phương án dự phòng nếu thiếu thời gian.
-- [ ] Thống nhất thời lượng từng người (tổng ~18–22 phút + Q&A):
-  - **Phần 1 (Dũng):** ~4 phút
-  - **Phần 2 + Demo (Quang Anh):** ~6 phút
-  - **Phần 3 (Dương):** ~5 phút
-  - **Phần 4 (Bảo):** ~6 phút
+- [ ] Thống nhất thời lượng từng người (tổng ~21–24 phút + Q&A):
+  - **Phần 1 (Dũng — Slide 1–4):** ~3–3,5 phút
+  - **Phần 2 + Demo (Quang Anh — Slide 5–10):** ~7–8 phút
+  - **Phần 3 (Dương — Slide 11–14):** ~5–6 phút
+  - **Phần 4 (Bảo — Slide 15–20):** ~6–7 phút

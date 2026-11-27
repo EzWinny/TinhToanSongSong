@@ -228,22 +228,22 @@
 \begin{frame}{Bố cục 4 phần thuyết trình}
 \begin{columns}[T,totalwidth=\textwidth]
   \begin{column}{0.485\textwidth}
-    \begin{bluebox}[height=2.95cm]{Phần 1 \;\textbullet\; Giới thiệu bài toán \hfill {\scriptsize Slide 3--6}}
+    \begin{bluebox}[height=2.95cm]{Phần 1 \;\textbullet\; Giới thiệu bài toán \hfill {\scriptsize Slide 3--4}}
       \textbf{\footnotesize Trần Lý Dũng} {\scriptsize(\color{Muted}24001658)}
       \begin{itemize}\scriptsize\setlength{\itemsep}{2pt}
         \item Bối cảnh, khoảng trống nghiên cứu \& 3 câu hỏi RQ.
         \item Bài toán tập Mandelbrot \& mất cân bằng tải tự nhiên.
-        \item Tiến hóa C++11/17/20 và 5 mô hình song song đánh giá.
+        \item Định dạng ảnh tối giản Netpbm (PBM/PGM) \& vai trò benchmark.
       \end{itemize}
     \end{bluebox}
   \end{column}
   \begin{column}{0.485\textwidth}
-    \begin{bluebox}[height=2.95cm]{Phần 2 \;\textbullet\; Thực nghiệm \& Demo \hfill {\scriptsize Slide 7--10}}
+    \begin{bluebox}[height=2.95cm]{Phần 2 \;\textbullet\; Thực nghiệm \& Demo \hfill {\scriptsize Slide 5--10}}
       \textbf{\footnotesize Nguyễn Quang Anh} {\scriptsize(\color{Muted}24001649 --- Nhóm trưởng)}
       \begin{itemize}\scriptsize\setlength{\itemsep}{2pt}
-        \item Ma trận 4 LLM $\times$ 5 biến thể \& cụm \code{rostam} (20 lõi/nút).
-        \item Bộ prompt P1--P3, quy trình 4 cổng \& độ đo \code{px/s}.
-        \item \textbf{Demo tương tác trực tiếp:} tái hiện lỗi bỏ qua \code{-t}.
+        \item Tiến hóa C++11/17/20 \& 5 mô hình song song đánh giá.
+        \item Ma trận 4 LLM $\times$ 5 biến thể, \code{rostam} \& bộ prompt P1--P3.
+        \item Quy trình 4 cổng, độ đo \code{px/s} \& \textbf{Demo trực tiếp} (lỗi \code{-t}).
       \end{itemize}
     \end{bluebox}
   \end{column}
@@ -335,6 +335,11 @@
 \end{columns}
 \end{frame}
 
+% ==========================================================================
+% PHẦN 2: 5 MÔ HÌNH SONG SONG, KIẾN TRÚC THỰC NGHIỆM & DEMO (NGUYỄN QUANG ANH)
+% ==========================================================================
+\setpart{Phần 2 \textbullet{} Nguyễn Quang Anh}
+
 % SLIDE 5: TIẾN HÓA SONG SONG TRONG C++ HIỆN ĐẠI
 \begin{frame}{Tiến hóa lập trình song song trong chuẩn C++ hiện đại}
 \centering
@@ -383,11 +388,6 @@ MPI + OpenMP & Phân tán (N nút) & Chia phân vùng theo \code{-p} + OpenMP tr
 \scriptsize Cùng một bài toán Mandelbrot, nhưng độ khó tăng dần từ \textbf{cú pháp quen thuộc} (async, OpenMP) sang \textbf{ngữ nghĩa hệ sinh thái \& điều phối phức tạp} (TBB, C++20 coroutine, MPI+OpenMP).
 \end{bluebox}
 \end{frame}
-
-% ==========================================================================
-% PHẦN 2: KIẾN TRÚC THỰC NGHIỆM & DEMO (NGUYỄN QUANG ANH)
-% ==========================================================================
-\setpart{Phần 2 \textbullet{} Nguyễn Quang Anh}
 
 % SLIDE 7: MA TRẬN THỰC NGHIỆM & HẠ TẦNG ĐO
 \begin{frame}{Ma trận thực nghiệm (4 LLM $\times$ 5 biến thể) \& Hạ tầng đo}
